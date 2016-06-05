@@ -24,4 +24,4 @@ npm install
 npm test
 ```
 
-Will run Flow typechecking.
+Will run Flow typechecking and ESLint style checking.

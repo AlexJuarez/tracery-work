@@ -1,11 +1,11 @@
 // @flow
 
 import { AppContainer } from 'react-hot-loader';
-var App = require('./App');
-var React = require('react');
-var ReactDOM = require('react-dom');
+import App from './App';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-let holderDiv = document.createElement("div");
+const holderDiv = document.createElement('div');
 document.body.appendChild(holderDiv);
 
 ReactDOM.render(
@@ -16,7 +16,8 @@ ReactDOM.render(
 
 if (module.hot) {
   module.hot.accept('./App', () => {
-    const NextApp = require('./App');
+    /* eslint global-require: 0 */
+    const NextApp = require('./App').default;
     ReactDOM.render(
       <AppContainer>
         <NextApp />
