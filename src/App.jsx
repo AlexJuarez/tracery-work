@@ -1,3 +1,5 @@
+// @flow
+
 var Hello = require('./Hello');
 var React = require('react');
 

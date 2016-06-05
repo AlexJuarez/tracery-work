@@ -14,6 +14,10 @@ module.exports = {
       test: /\.jsx?$/,
       include: path.join(__dirname, 'src'),
       loader: 'babel-loader',
+    },
+    {
+      test: /\.css$/,
+      loader: 'style-loader!css-loader',
     }],
   },
   output: {

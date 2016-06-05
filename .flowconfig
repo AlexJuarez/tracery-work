@@ -1,0 +1,12 @@
+[ignore]
+<PROJECT_ROOT>/[^/]*$
+<PROJECT_ROOT>/node_modules/fbjs/.*
+
+[include]
+node_modules/
+src/
+
+[options]
+module.name_mapper='^\(.*\)\.css$' -> '<PROJECT_ROOT>/CSSModule.js.flow'
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+suppress_comment= \\(.\\|\n\\)*\\$FlowIssue
