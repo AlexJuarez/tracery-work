@@ -3,7 +3,12 @@ var path = require('path');
 
 module.exports = {
   devtool: 'source-map',
-  entry: './src/index.jsx',
+  entry: [
+    'webpack-dev-server/client?http://0.0.0.0:8080',
+    'webpack/hot/only-dev-server',
+    'react-hot-loader/patch',
+    './src/index.jsx',
+  ],
   module: {
     loaders: [{
       test: /\.jsx?$/,
@@ -21,4 +26,7 @@ module.exports = {
       title: "Tracery 0.1",
     }),
   ],
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
+  },
 };

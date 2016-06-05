@@ -1,10 +1,19 @@
-Once:
-`brew install node`
-`node install -g npm`
+## Setup
+### Once
 
-On any rebase:
-`npm install`
+```
+brew install node
+node install -g npm
+```
 
-To use locally:
-`npm start`
-Open `localhost:8080` in Chrome
+### On any rebase
+
+```
+npm install
+```
+
+### To use locally
+
+1. ```npm start```
+2. Open `localhost:8080` in Chrome
+3. Many types of edits will automatically be applied thanks to React Hot Loader
