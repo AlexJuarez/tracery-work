@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "description": "The unified trace-analysis platform.",
   "scripts": {
+    "coverage": "npm run test -- --coverage",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "lint": "eslint --ext .js --ext .jsx",
     "lint-all": "npm run lint -- .",
     "fix-all": "npm run lint -- --fix .",
     "start": "webpack-dev-server --hot",
-    "test": "npm run lint-all && npm run flow"
+    "test": "jest",
+    "test-all": "npm run flow && npm run test && npm run lint-all"
   },
   "dependencies": {
     "react": "^15.1.0",
@@ -17,10 +19,13 @@
   "devDependencies": {
     "babel-core": "^6.9.1",
     "babel-eslint": "^6.0.4",
+    "babel-jest": "^12.1.0",
     "babel-loader": "^6.2.4",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0",
+    "babel-polyfill": "^6.9.1",
     "babel-preset-react": "^6.5.0",
     "css-loader": "^0.23.1",
+    "enzyme": "^2.3.0",
     "eslint": "^2.11.1",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.8.1",
@@ -28,9 +33,25 @@
     "eslint-plugin-react": "^5.1.1",
     "flow-bin": "^0.26.0",
     "html-webpack-plugin": "^2.19.0",
+    "jest-cli": "^12.1.1",
+    "react-addons-test-utils": "^15.1.0",
     "react-hot-loader": "^3.0.0-beta.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testRegex": "test/.*\\.jsx?$",
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/enzyme/",
+      "<rootDir>/node_modules/react/",
+      "<rootDir>/node_modules/react-dom/",
+      "<rootDir>/node_modules/react-addons-test-utils/"
+    ]
   }
 }
