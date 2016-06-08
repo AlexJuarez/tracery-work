@@ -1,0 +1,8 @@
+/* Ensure that the elements outside of our React root don't add whitespace
+around it */
+body, html, .tracery-app-container {
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
