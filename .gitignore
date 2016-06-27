@@ -1,0 +1,7 @@
+*_BACKUP_*
+*_LOCAL_*
+*_BASE_*
+*_REMOTE_*
+build
+node_modules
+npm-debug.log

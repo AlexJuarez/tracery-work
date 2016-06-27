@@ -1,0 +1,21 @@
+{
+  "name": "tracery",
+  "version": "0.1.0",
+  "description": "The unified trace-analysis platform.",
+  "scripts": {
+    "start": "webpack && http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.9.1",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0",
+    "babel-preset-react": "^6.5.0",
+    "http-server": "^0.9.0",
+    "webpack": "^1.13.1"
+  }
+}
