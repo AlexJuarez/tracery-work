@@ -24,4 +24,16 @@ npm install
 npm test
 ```
 
-Will run Flow typechecking.
+Will run tests.
+
+```
+npm run coverage
+```
+
+Will run tests while recording coverage. Find the report at `coverage/lcov-report/index.html`.
+
+```
+npm run test-all
+```
+
+Will run tests, Flow typechecking, and ESLint style checking.

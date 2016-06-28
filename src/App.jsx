@@ -1,8 +1,8 @@
 // @flow
 
-var Hello = require('./Hello');
-var React = require('react');
+import Hello from './Hello';
+import React from 'react';
 
-module.exports = function() {
+export default function () {
   return <Hello />;
-};
+}
