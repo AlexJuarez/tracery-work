@@ -21,19 +21,19 @@ npm install
 ### To test
 
 ```
-npm test
+npm run jest
 ```
 
-Will run tests.
+Will run Jest tests.
 
 ```
 npm run coverage
 ```
 
-Will run tests while recording coverage. Find the report at `coverage/lcov-report/index.html`.
+Will run Jest tests while recording coverage. Find the report at `coverage/lcov-report/index.html`.
 
 ```
-npm run test-all
+npm test
 ```
 
-Will run tests, Flow typechecking, and ESLint style checking.
+Will run Flow typechecking, then Jest tests, then ESLint style checking.
