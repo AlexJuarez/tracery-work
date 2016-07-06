@@ -46,6 +46,12 @@ Will run Flow typechecking, then Jest tests, then ESLint style checking.
 
 ### Setup
 
+#### Thrift
+Install the `thrift` compiler if it's not already installed. On OS X:
+```
+brew install thrift
+```
+
 ### Build
 
 ```
@@ -105,4 +111,16 @@ sqlite> SELECT * FROM com_facebook_tracery_database_trace_FileInfoTable;
 sqlite> SELECT * FROM com_facebook_tracery_database_trace_DiskPhysOpTable;
 ...
 sqlite> .exit
+```
+
+#### Run server
+
+```
+$ ./tracery-service.sh server ./tracery.db
+```
+
+#### Run test client
+
+```
+$ ./tracery-service.sh client
 ```

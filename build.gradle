@@ -11,8 +11,31 @@ compileJava.options.encoding = 'UTF-8'
 
 mainClassName = "com.facebook.tracery.Main"
 
+sourceSets {
+    // Include the Disk I/O profiler scripts.
+    main {
+        java.srcDir 'src/main/java'
+        resources {
+            srcDir 'src/main/python/parse/diskio'
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.jruyi.gradle:thrift-gradle-plugin:0.3.1"
+    }
+}
+apply plugin: "org.jruyi.thrift" // https://github.com/jruyi/thrift-gradle-plugin
+
 checkstyle {
     toolVersion = "7.0"
+    checkstyleMain.source = "src/main/java"
 }
 
 tasks.withType(FindBugs) {
@@ -20,15 +43,19 @@ tasks.withType(FindBugs) {
         xml.enabled = false
         html.enabled = true
     }
+
+    classes = classes.filter {
+        !it.path.contains(new File("com/facebook/tracery/thrift").path)
+    }
 }
 
-// Include the Disk I/O profiler scripts.
-sourceSets {
-    main {
-        resources {
-            srcDir 'src/main/python/parse/diskio'
-        }
-    }
+pmd {
+    pmdMain.source = "src/main/java"
+}
+
+compileThrift {
+    createGenFolder false
+    outputDir 'src/main/java-gen'
 }
 
 // Create a single Jar with all dependencies
@@ -54,6 +81,7 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j:2.6.1'
     compile 'org.apache.logging.log4j:log4j-api:2.6.1'
     compile 'org.apache.logging.log4j:log4j-core:2.6.1'
+    compile 'org.apache.thrift:libthrift:0.9.3'
     compile 'com.beust:jcommander:1.48'
     compile 'com.google.code.findbugs:annotations:3.0.1'
     compile 'com.healthmarketscience.sqlbuilder:sqlbuilder:2.1.4'

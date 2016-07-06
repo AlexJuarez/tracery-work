@@ -1,15 +1,18 @@
 package com.facebook.tracery.database.trace;
 
-import com.facebook.tracery.Util;
 import com.facebook.tracery.database.AbstractTable;
 import com.facebook.tracery.database.Database;
+import com.facebook.tracery.thrift.TraceInfo;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
+import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Directory of trace data and associated tables.
@@ -94,5 +97,42 @@ public class MasterTraceTable extends AbstractTable {
     return rowid;
   }
 
+  /**
+   * Return the list of known traces.
+   *
+   * @return list of traces
+   * @throws SQLException on failure
+   */
+  public List<TraceInfo> getTraceInfos() throws SQLException {
+    List<TraceInfo> result = new ArrayList<>();
+
+    String sql =
+        new SelectQuery()
+            .addFromTable(dbTable)
+            .addColumns(dbColumnTraceUrl, dbColumnBeginTime, dbColumnEndTime, dbColumnDescription)
+            .validate().toString();
+
+    try (Statement statement = db.createStatement();
+         ResultSet resultSet = statement.executeQuery(sql)) {
+      while (resultSet.next()) {
+        TraceInfo traceInfo = new TraceInfo();
+        int traceIndex = resultSet.getRow();
+        String traceUrl = resultSet.getString(1);
+        long beginTime = resultSet.getLong(2);
+        long endTime = resultSet.getLong(3);
+        String description = resultSet.getString(4);
+
+        traceInfo.setTraceId(Integer.toString(traceIndex));
+        traceInfo.setTraceUrl(traceUrl);
+        traceInfo.setBeginTime(beginTime);
+        traceInfo.setEndTime(endTime);
+        traceInfo.setDescription(description);
+
+        result.add(traceInfo);
+      }
+    }
+
+    return result;
+  }
 }
 
