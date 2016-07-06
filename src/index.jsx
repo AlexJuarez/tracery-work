@@ -1,26 +1,30 @@
 // @flow
 
 import { AppContainer } from 'react-hot-loader';
-import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import BrowserHost from './BrowserHost';
+
+require('./index.css');
+
 const holderDiv = document.createElement('div');
+holderDiv.classList.add('tracery-app-container');
 document.body.appendChild(holderDiv);
 
 ReactDOM.render(
   <AppContainer>
-    <App />
+    <BrowserHost />
   </AppContainer>,
   holderDiv);
 
 if (module.hot) {
-  module.hot.accept('./App', () => {
+  module.hot.accept('./BrowserHost', () => {
     /* eslint global-require: 0 */
-    const NextApp = require('./App').default;
+    const NextHost = require('./BrowserHost').default;
     ReactDOM.render(
       <AppContainer>
-        <NextApp />
+        <NextHost />
       </AppContainer>,
       holderDiv);
   });
