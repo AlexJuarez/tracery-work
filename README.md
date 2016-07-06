@@ -45,6 +45,7 @@ Will run Flow typechecking, then Jest tests, then ESLint style checking.
 # Backend
 
 ### Setup
+
 ### Build
 
 ```
@@ -84,3 +85,10 @@ java -jar build/libs/tracery-service-all-1.0.jar
 
 or use the `tracery-service.sh` script.
 
+### Examples
+
+#### Insert trace data into database
+
+```
+$ ./tracery-service.sh insert --diskio ~/fbsource/fbandroid/native/tools/disk-profiler/src/scripts/example_trace
+```

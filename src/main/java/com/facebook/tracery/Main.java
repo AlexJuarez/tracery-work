@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import com.facebook.tracery.command.InsertTraceCommand;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +17,8 @@ public class Main {
   public boolean help = false;
 
   /* package */ boolean run(JCommander jcommander, String[] args) {
+
+    InsertTraceCommand cmdInsertTrace = new InsertTraceCommand(jcommander);
     try {
       jcommander.parse(args);
     } catch (ParameterException pex) {
@@ -30,11 +33,23 @@ public class Main {
       return true;
     }
 
-    logger.info("Hello world!");
-    logger.debug("Bugs? What bugs?");
-    logger.error("We've got problems.");
+    String command = jcommander.getParsedCommand();
+    if (command == null) {
+      jcommander.usage();
+      return false;
+    }
 
-    return true;
+    try {
+      if (command.equals(cmdInsertTrace.getName())) {
+        cmdInsertTrace.run();
+        return true;
+      } else {
+        jcommander.usage();
+      }
+    } catch (Exception ex) {
+      logger.error(ex.getLocalizedMessage());
+    }
+    return false;
   }
 
   public static void main(String[] args) {

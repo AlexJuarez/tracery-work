@@ -22,7 +22,16 @@ tasks.withType(FindBugs) {
     }
 }
 
-//create a single Jar with all dependencies
+// Include the Disk I/O profiler scripts.
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/python/parse/diskio'
+        }
+    }
+}
+
+// Create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'Tracery Service',
@@ -35,21 +44,20 @@ task fatJar(type: Jar) {
 }
 assemble.dependsOn fatJar
 
-//Get dependencies from Maven central repository
+// Get dependencies from Maven central repository
 repositories {
     mavenCentral()
 }
 
-//Project dependencies
+// Project dependencies
 dependencies {
     compile 'org.apache.logging.log4j:log4j:2.6.1'
     compile 'org.apache.logging.log4j:log4j-api:2.6.1'
     compile 'org.apache.logging.log4j:log4j-core:2.6.1'
     compile 'com.beust:jcommander:1.48'
     compile 'com.google.code.findbugs:annotations:3.0.1'
+    compile 'org.python:jython-standalone:2.7.0'
     compile 'org.slf4j:slf4j-simple:1.7.21'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.82-beta'
 }
-
-
