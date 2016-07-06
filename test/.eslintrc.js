@@ -3,4 +3,7 @@ module.exports = {
     jasmine: true,
     jest: true,
   },
+  rules: {
+    "flowtype/require-valid-file-annotation": [2, "never"],
+  },
 };

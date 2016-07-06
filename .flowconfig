@@ -1,6 +1,7 @@
 [ignore]
 <PROJECT_ROOT>/[^/]*$
 <PROJECT_ROOT>/node_modules/fbjs/.*
+<PROJECT_ROOT>/test/.*
 
 [include]
 node_modules/
