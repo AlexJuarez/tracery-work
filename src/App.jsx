@@ -3,6 +3,6 @@
 import Hello from './Hello';
 import React from 'react';
 
-export default function () {
+export default function (): React.Element<*> {
   return <Hello />;
 }
