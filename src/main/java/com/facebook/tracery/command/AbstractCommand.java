@@ -1,7 +1,6 @@
 package com.facebook.tracery.command;
 
 import com.beust.jcommander.JCommander;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

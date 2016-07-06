@@ -90,5 +90,19 @@ or use the `tracery-service.sh` script.
 #### Insert trace data into database
 
 ```
-$ ./tracery-service.sh insert --diskio ~/fbsource/fbandroid/native/tools/disk-profiler/src/scripts/example_trace
+$ ./tracery-service.sh insert --diskio ~/fbsource/fbandroid/native/tools/disk-profiler/src/scripts/example_trace ./tracery.db
+$ sqlite3 ./tracery.db
+sqlite> .tables
+com_facebook_tracery_database_trace_DiskPhysOpTable
+com_facebook_tracery_database_trace_FileInfoTable
+trace_master
+sqlite> .headers on
+sqlite> .mode column
+sqlite> SELECT * FROM trace_master;
+...
+sqlite> SELECT * FROM com_facebook_tracery_database_trace_FileInfoTable;
+...
+sqlite> SELECT * FROM com_facebook_tracery_database_trace_DiskPhysOpTable;
+...
+sqlite> .exit
 ```
