@@ -9,6 +9,7 @@
     "lint-all": "npm run lint -- .",
     "fix-all": "npm run lint -- --fix .",
     "jest": "jest",
+    "server": "mvn package && java -jar target/tracery-service-1.0-SNAPSHOT-jar-with-dependencies.jar",
     "start": "webpack-dev-server --hot",
     "test": "npm-run-all -sc flow jest lint-all"
   },
