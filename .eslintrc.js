@@ -4,6 +4,7 @@ module.exports = {
     "parser": "babel-eslint",
     "plugins": [
         "flowtype",
+        "flow-vars",
         "react"
     ],
     "rules": {
@@ -17,5 +18,8 @@ module.exports = {
       "flowtype/space-after-type-colon": [2, "always"],
       "flowtype/space-before-type-colon": [2, "never"],
       "flowtype/type-id-match": [2, "^([A-Z][a-z0-9]+)+$"],
-    }
+
+      "flow-vars/define-flow-type": 1,
+      "flow-vars/use-flow-type": 1,
+    },
 };
