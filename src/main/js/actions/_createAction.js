@@ -2,13 +2,13 @@
 
 export type Action<Payload> = {
   type: string,
-  payload: Payload,
+  payload?: Payload,
   error?: boolean,
 }
 
 export default function createAction<Payload>(
   type: string,
-  payload: Payload,
+  payload?: Payload,
   error?: boolean): Action<Payload> {
   return {
     type,

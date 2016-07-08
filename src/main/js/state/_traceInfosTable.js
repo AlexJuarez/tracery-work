@@ -2,6 +2,7 @@
 
 // TODO: Basically this whole file should be parameterized by table
 
+import invariant from 'invariant';
 import { combineReducers } from 'redux';
 
 import type { Action } from '../actions';
@@ -24,6 +25,7 @@ export type TraceInfosTable = {
 function rows(state: Rows = {}, action: Action<*>): Rows {
   switch (action.type) {
     case actions.TRACES_TABLE_FETCH_SUCCESS:
+      invariant(action.payload, 'Expected an action with a payload');
       return {
         ...state,
         ...action.payload.rows,
@@ -36,6 +38,7 @@ function rows(state: Rows = {}, action: Action<*>): Rows {
 function ids(state: Ids = [], action: Action<*>): Ids {
   switch (action.type) {
     case actions.TRACES_TABLE_FETCH_SUCCESS:
+      invariant(action.payload, 'Expected an action with a payload');
       return [
         ...state,
         ...action.payload.ids,
