@@ -3,6 +3,7 @@
 import { AppContainer } from 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Redbox from 'redbox-react';
 
 import BrowserHost from './BrowserHost';
 
@@ -13,7 +14,10 @@ holderDiv.classList.add('tracery-app-container');
 document.body.appendChild(holderDiv);
 
 ReactDOM.render(
-  <AppContainer>
+  // TODO: react-hot-loader@3.0.0-beta.2 seems to include a version of Redbox
+  // that doesn't like React 15. Once that's fixed, we can stop specifying it
+  // explicitly here and remove our dependency on redbox-react.
+  <AppContainer errorReporter={Redbox}>
     <BrowserHost />
   </AppContainer>,
   holderDiv);

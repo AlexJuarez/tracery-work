@@ -23,6 +23,7 @@ module.exports = {
     }],
   },
   output: {
+    devtoolModuleFilenameTemplate: '/[resource-path]',
     path: path.join(__dirname, 'build'),
     publicPath: '/',
     filename: 'index.bundle.js',
