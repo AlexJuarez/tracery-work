@@ -1,7 +1,11 @@
 {
   "plugins": [
     "react-hot-loader/babel",
-    "transform-es2015-modules-commonjs"
+    "transform-es2015-modules-commonjs",
+
+    // TODO: Remove these two when https://github.com/gaearon/react-hot-loader/issues/313 is fixed
+    "transform-class-properties",
+    "transform-es2015-classes"
   ],
   "presets" : [
     "react"
