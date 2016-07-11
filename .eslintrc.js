@@ -3,6 +3,7 @@ module.exports = {
     "installedESLint": true,
     "parser": "babel-eslint",
     "plugins": [
+        "import",
         "flowtype",
         "flow-vars",
         "react"
@@ -22,5 +23,9 @@ module.exports = {
       // These aren't so much rules as transforms so that the rest of ESLint gets out of the way
       "flow-vars/define-flow-type": 1,
       "flow-vars/use-flow-type": 1,
+
+      // The import plugin handles Flow `import type` syntax, whereas ESLint itself does not.
+      "no-duplicate-imports": "off",
+      "import/no-duplicates": "error",
     },
 };
