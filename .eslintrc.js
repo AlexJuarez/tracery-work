@@ -13,6 +13,12 @@ module.exports = {
       // something has not been defined.
       "no-use-before-define": "off",
 
+      // AirBnB's style rule takes an opinionated stance on leading underscores as a convention for
+      // indicating privacy of class members, recommending instead that various language hacks like
+      // WeakRef or the Crockford privacy pattern be used. We find that the extra assurance is not
+      // worth the extra typing.
+      "no-underscore-dangle": "off",
+
       "flowtype/require-parameter-type": ["error", "always"],
       "flowtype/require-return-type": ["error", "always"],
       "flowtype/require-valid-file-annotation": ["error", "always"],
