@@ -13,6 +13,7 @@
     "test": "npm-run-all -sc flow jest lint-all"
   },
   "dependencies": {
+    "invariant": "^2.2.1",
     "react": "^15.1.0",
     "react-dom": "^15.1.0"
   },
