@@ -30,8 +30,9 @@ class PixelCellRenderer {
     this._data = this._imageData.data;
   }
 
-  addCell(position: { row: number, col: number }, fill: Color) {
+  addCell(position: { row: number, col: number }, fillIndex: number) {
     const { row, col } = position;
+    const fill = this._props.colors[fillIndex];
     const top = this._props.y + (row * this._props.cellHeight);
     const bottom = this._props.y + top + this._props.cellHeight;
     const left = this._props.x + (col * this._props.cellWidth);

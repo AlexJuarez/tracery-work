@@ -21,6 +21,16 @@ node install -g npm
 
 4. Open [http://localhost:9090](http://localhost:9090) in your browser
 
+### Quick UI Guide
+
+Right now we've just got a heatmap with fake data for performance testing. A few keyboard commands have been hacked in:
+* `-`: Zoom out by 1 dip/cell
+* `=`/`+`: Zoom in by 1 dip/cell
+* `z`: Zoom all the way out
+* `x`: Zoom all the way in
+
+Hitting `z` and `x` alternately is a fun perf test.
+
 ## Develop the UI
 
 **NOTE: This functionality is currently disabled while we figure out how to allow the UI to come from

@@ -6,7 +6,7 @@ import React from 'react';
 import type { CanvasContextProvider } from '../CanvasContextProvider';
 import type { CellRenderer } from './CellRenderer';
 import { dipsToPixels } from '../pixels';
-import PixelCellRenderer from './PixelCellRenderer';
+import SpriteCellRenderer from './SpriteCellRenderer';
 import type { Props } from './Props';
 
 
@@ -24,7 +24,7 @@ class RectangularMap extends React.Component {
   props: Props;
 
   _newCellRenderer(props: Props, context: CanvasRenderingContext2D): CellRenderer {
-    return new PixelCellRenderer(props, context);
+    return new SpriteCellRenderer(props, context);
   }
 
   renderToCanvas(provider: CanvasContextProvider) {
@@ -57,7 +57,7 @@ class RectangularMap extends React.Component {
       params: { rowIndex: number, colIndex: number, colorIndex: ?number }) {
     const { rowIndex, colIndex, colorIndex } = params;
     if (colorIndex) {
-      cellRenderer.addCell({ row: rowIndex, col: colIndex }, this.props.colors[colorIndex]);
+      cellRenderer.addCell({ row: rowIndex, col: colIndex }, colorIndex);
     }
   }
 

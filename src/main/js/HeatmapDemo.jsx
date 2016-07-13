@@ -9,7 +9,8 @@ type State = {
   cellSize: number
 };
 
-const numCells = Math.floor(Math.random() * 10000);
+const numCells = 14000;
+const initialZoom = 10;
 
 const cells = new Array(numCells);
 let i = 0;
@@ -38,7 +39,7 @@ class HeatmapDemo extends React.Component {
     super(props);
 
     this.state = {
-      cellSize: 10,
+      cellSize: initialZoom,
     };
 
     // $FlowIssue: https://github.com/facebook/flow/issues/1517
@@ -60,6 +61,12 @@ class HeatmapDemo extends React.Component {
     } else if (event.key === '-') {
       this._zoomOut(ZOOM_INCREMENT);
       event.stopPropagation();
+    } else if (event.key === 'z') {
+      window.requestAnimationFrame((): void => this.zoomAllOut());
+      event.stopPropagation();
+    } else if (event.key === 'x') {
+      window.requestAnimationFrame((): void => this.zoomAllIn());
+      event.stopPropagation();
     }
   }
 
@@ -67,7 +74,7 @@ class HeatmapDemo extends React.Component {
     this.setState({
       cellSize: Math.min(
         Math.min(this.props.width, this.props.height),
-        this.state.cellSize + amount),
+        Math.trunc(this.state.cellSize + amount)),
     });
   }
 
@@ -75,6 +82,20 @@ class HeatmapDemo extends React.Component {
     this.setState({
       cellSize: Math.max(pixelsToDips(1), this.state.cellSize - amount),
     });
+  }
+
+  zoomAllOut() {
+    if (this.state.cellSize > pixelsToDips(1)) {
+      this._zoomOut(1);
+      window.requestAnimationFrame((): void => this.zoomAllOut());
+    }
+  }
+
+  zoomAllIn() {
+    if (this.state.cellSize < initialZoom) {
+      this._zoomIn(1);
+      window.requestAnimationFrame((): void => this.zoomAllIn());
+    }
   }
 
   render(): React.Element<*> {
