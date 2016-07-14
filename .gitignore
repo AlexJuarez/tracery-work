@@ -32,14 +32,18 @@ java-gen/
 ###
 # JavaScript
 ###
+node_modules
+npm-debug.log
+
+###
+# General
+###
 *_BACKUP_*
 *_LOCAL_*
 *_BASE_*
 *_REMOTE_*
 build
 coverage
-node_modules
-npm-debug.log
 
 ###
 # Miscellaneous

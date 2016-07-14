@@ -78,16 +78,20 @@ repositories {
 
 // Project dependencies
 dependencies {
-    compile 'org.apache.logging.log4j:log4j:2.6.1'
-    compile 'org.apache.logging.log4j:log4j-api:2.6.1'
-    compile 'org.apache.logging.log4j:log4j-core:2.6.1'
-    compile 'org.apache.thrift:libthrift:0.9.3'
+    // Main
     compile 'com.beust:jcommander:1.48'
-    compile 'com.google.code.findbugs:annotations:3.0.1'
-    compile 'com.healthmarketscience.sqlbuilder:sqlbuilder:2.1.4'
     compile 'org.python:jython-standalone:2.7.0'
-    compile 'org.slf4j:slf4j-simple:1.7.21'
+    compile 'org.apache.thrift:libthrift:0.9.3'
+    compile 'com.healthmarketscience.sqlbuilder:sqlbuilder:2.1.4'
     compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+
+    // Logging
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-log4j12:1.7.21'
+    compile 'org.apache.logging.log4j:log4j-core:2.6.1'
+
+    // Testing
+    compile 'com.google.code.findbugs:annotations:3.0.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.82-beta'
 }
