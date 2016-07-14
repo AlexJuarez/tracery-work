@@ -1,11 +1,11 @@
 [ignore]
 <PROJECT_ROOT>/[^/]*$
 <PROJECT_ROOT>/node_modules/fbjs/.*
-<PROJECT_ROOT>/test/.*
+<PROJECT_ROOT>/src/test/js/.*
 
 [include]
 node_modules/
-src/
+src/main/js
 
 [options]
 module.name_mapper='^\(.*\)\.css$' -> '<PROJECT_ROOT>/CSSModule.js.flow'

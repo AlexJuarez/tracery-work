@@ -1,8 +1,8 @@
-jest.unmock('../src/Hello');
+jest.unmock('../../main/js/Hello');
 
 import { shallow } from 'enzyme';
 import React from 'react';
-import Hello from '../src/Hello';
+import Hello from '../../main/js/Hello';
 
 describe('Hello', () => {
   it('returns "Hello World"', () => {

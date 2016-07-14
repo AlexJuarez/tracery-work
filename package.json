@@ -53,7 +53,7 @@
       "json",
       "jsx"
     ],
-    "testRegex": "test/.*\\.jsx?$",
+    "testRegex": "test/js/.*\\.jsx?$",
     "unmockedModulePathPatterns": [
       "<rootDir>/node_modules/enzyme/",
       "<rootDir>/node_modules/react/",

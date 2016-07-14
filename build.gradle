@@ -1,0 +1,97 @@
+apply plugin: 'application' // https://docs.gradle.org/current/userguide/application_plugin.html
+
+apply plugin: 'checkstyle'  // https://docs.gradle.org/current/userguide/checkstyle_plugin.html
+apply plugin: 'pmd'         // https://docs.gradle.org/current/userguide/pmd_plugin.html
+apply plugin: 'findbugs'    // https://docs.gradle.org/current/userguide/findbugs_plugin.html
+
+version = '1.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+mainClassName = "com.facebook.tracery.Main"
+
+sourceSets {
+    // Include the Disk I/O profiler scripts.
+    main {
+        java.srcDir 'src/main/java'
+        resources {
+            srcDir 'src/main/python/parse/diskio'
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.jruyi.gradle:thrift-gradle-plugin:0.3.1"
+    }
+}
+apply plugin: "org.jruyi.thrift" // https://github.com/jruyi/thrift-gradle-plugin
+
+checkstyle {
+    toolVersion = "7.0"
+    checkstyleMain.source = "src/main/java"
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+
+    classes = classes.filter {
+        !it.path.contains(new File("com/facebook/tracery/thrift").path)
+    }
+}
+
+pmd {
+    pmdMain.source = "src/main/java"
+}
+
+compileThrift {
+    createGenFolder false
+    outputDir 'src/main/java-gen'
+}
+
+// Create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Tracery Service',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+assemble.dependsOn fatJar
+
+// Get dependencies from Maven central repository
+repositories {
+    mavenCentral()
+}
+
+// Project dependencies
+dependencies {
+    // Main
+    compile 'com.beust:jcommander:1.48'
+    compile 'org.python:jython-standalone:2.7.0'
+    compile 'org.apache.thrift:libthrift:0.9.3'
+    compile 'com.healthmarketscience.sqlbuilder:sqlbuilder:2.1.4'
+    compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+
+    // Logging
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-log4j12:1.7.21'
+    compile 'org.apache.logging.log4j:log4j-core:2.6.1'
+
+    // Testing
+    compile 'com.google.code.findbugs:annotations:3.0.1'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.0.82-beta'
+}

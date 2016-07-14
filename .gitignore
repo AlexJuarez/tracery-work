@@ -1,8 +1,66 @@
+###
+# IntelliJ
+# See: https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
+###
+
+# User-specific stuff:
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+
+# Sensitive or high-churn files:
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+
+# Gradle:
+.gradle/
+.idea/gradle.xml
+.idea/libraries
+
+###
+# Java
+###
+target/
+java-gen/
+
+###
+# JavaScript
+###
+node_modules
+npm-debug.log
+
+###
+# General
+###
 *_BACKUP_*
 *_LOCAL_*
 *_BASE_*
 *_REMOTE_*
 build
 coverage
-node_modules
-npm-debug.log
+
+###
+# Miscellaneous
+###
+
+# vim temp files
+*.swp
+*.un~
+
+# Emacs files:
+# VCS comparison files:
+*.~*~
+# Autosave files
+.#*
+
+# Metadata files created by Mac OS.
+.DS_Store
+
+# Tracery databases
+*.db
