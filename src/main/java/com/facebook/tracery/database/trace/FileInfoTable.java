@@ -1,71 +1,68 @@
 package com.facebook.tracery.database.trace;
 
+import com.facebook.tracery.database.Column;
 import com.facebook.tracery.database.Database;
-import com.facebook.tracery.thrift.FileInfo;
+import com.facebook.tracery.database.Table;
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Store for file information for files referenced by traces.
  */
-public class FileInfoTable extends AbstractTraceTable {
+public class FileInfoTable extends Table {
   public static final String TRACE_INDEX_COLUMN_NAME = "trace_idx";
   public static final String FILE_NAME_COLUMN_NAME = "file_name";
   public static final String FILE_SIZE_COLUMN_NAME = "file_size";
   public static final String INODE_COLUMN_NAME = "inode";
 
-  private final DbColumn dbColumnTraceIndex;
-  private final DbColumn dbColumnFileName;
-  private final DbColumn dbColumnFileSize;
-  private final DbColumn dbColumnInode;
+  private final Column columnTraceIndex;
+  private final Column columnFileName;
+  private final Column columnFileSize;
+  private final Column columnInode;
 
   public FileInfoTable(Database db) {
     super(db);
 
-    dbColumnTraceIndex = dbTable.addColumn(TRACE_INDEX_COLUMN_NAME, ColumnAffinity.INT.name(),
-        null);
-    dbTable.foreignKey("[Master trace table trace ID column constraint.]",
-        new String[] {dbColumnTraceIndex.getName()},
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
+    columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
         MasterTraceTable.TABLE_NAME,
-        new String[] {MasterTraceTable.TRACE_INDEX_COLUMN_NAME});
+        MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
 
-    dbColumnFileName = dbTable.addColumn(FILE_NAME_COLUMN_NAME, ColumnAffinity.TEXT.name(), null);
-    dbColumnFileSize = dbTable.addColumn(FILE_SIZE_COLUMN_NAME, ColumnAffinity.INT.name(), null);
-    dbColumnInode = dbTable.addColumn(INODE_COLUMN_NAME, ColumnAffinity.INT.name(), null);
+    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
+    columnFileSize = addColumn(FILE_SIZE_COLUMN_NAME, Column.BYTES_COLUMN_TYPE);
+    columnInode = addColumn(INODE_COLUMN_NAME, Column.ID_COLUMN_TYPE);
   }
 
-  public DbColumn getTraceIndexColumn() {
-    return dbColumnTraceIndex;
+  public Column getTraceIndexColumn() {
+    return columnTraceIndex;
   }
 
-  public DbColumn getFileNameColumn() {
-    return dbColumnFileName;
+  public Column getFileNameColumn() {
+    return columnFileName;
   }
 
-  public DbColumn getFileSizeColumn() {
-    return dbColumnFileSize;
+  public Column getFileSizeColumn() {
+    return columnFileSize;
   }
 
-  public DbColumn getInodeColumn() {
-    return dbColumnInode;
+  public Column getInodeColumn() {
+    return columnInode;
   }
 
   public int indexOfFile(int traceIndex, String fileName) throws SQLException {
     String sql =
         new SelectQuery()
-            .addColumns(dbColumnTraceIndex)
-            .addCondition(BinaryCondition.equalTo(dbColumnTraceIndex, traceIndex))
-            .addCondition(BinaryCondition.equalTo(dbColumnFileName, fileName))
+            .addFromTable(getDbTable())
+            .addColumns(columnTraceIndex.getDbColumn())
+            .addCondition(BinaryCondition.equalTo(columnTraceIndex.getDbColumn(), traceIndex))
+            .addCondition(BinaryCondition.equalTo(columnFileName.getDbColumn(), fileName))
             .validate().toString();
-    try (Statement statement = db.createStatement();
+    try (Statement statement = getDatabase().createStatement();
          ResultSet resultSet = statement.executeQuery(sql)) {
       int idx = -1;
       if (resultSet.next()) {
@@ -78,47 +75,12 @@ public class FileInfoTable extends AbstractTraceTable {
   public void insertBatch(Statement statement, int traceIndex, String fileName, long fileSize,
                           long inode) throws SQLException {
     String insertQuery =
-        new InsertQuery(dbTable)
-            .addColumn(dbColumnTraceIndex, traceIndex)
-            .addColumn(dbColumnFileName, fileName)
-            .addColumn(dbColumnFileSize, fileSize)
-            .addColumn(dbColumnInode, inode)
+        new InsertQuery(getDbTable())
+            .addColumn(columnTraceIndex.getDbColumn(), traceIndex)
+            .addColumn(columnFileName.getDbColumn(), fileName)
+            .addColumn(columnFileSize.getDbColumn(), fileSize)
+            .addColumn(columnInode.getDbColumn(), inode)
             .validate().toString();
     statement.addBatch(insertQuery);
-  }
-
-  /**
-   * Return the list of known files.
-   *
-   * @return file list
-   */
-  public List<FileInfo> getFileInfos() throws SQLException {
-    List<FileInfo> result = new ArrayList<>();
-
-    String sql =
-        new SelectQuery()
-            .addFromTable(dbTable)
-            .addColumns(dbColumnTraceIndex, dbColumnFileName, dbColumnFileSize, dbColumnInode)
-            .validate().toString();
-
-    try (Statement statement = db.createStatement();
-         ResultSet resultSet = statement.executeQuery(sql)) {
-      while (resultSet.next()) {
-        FileInfo fileInfo = new FileInfo();
-        int traceIndex = resultSet.getInt(1);
-        String fileName = resultSet.getString(2);
-        long fileSize = resultSet.getLong(3);
-        long inode = resultSet.getLong(4);
-
-        fileInfo.setTraceId(Integer.toString(traceIndex));
-        fileInfo.setFileName(fileName);
-        fileInfo.setFileSize(fileSize);
-        fileInfo.setInode(inode);
-
-        result.add(fileInfo);
-      }
-    }
-
-    return result;
   }
 }

@@ -1,23 +1,24 @@
 package com.facebook.tracery.database.trace;
 
-import com.facebook.tracery.database.AbstractTable;
+import com.facebook.tracery.database.Column;
 import com.facebook.tracery.database.Database;
+import com.facebook.tracery.database.Table;
 import com.facebook.tracery.thrift.TraceInfo;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Directory of trace data and associated tables.
  */
-public class MasterTraceTable extends AbstractTable {
+public class MasterTraceTable extends Table {
   public static final String TABLE_NAME = "trace_master";
 
   public static final String TRACE_INDEX_COLUMN_NAME = "trace_idx";
@@ -25,71 +26,77 @@ public class MasterTraceTable extends AbstractTable {
   public static final String BEGIN_TIME_COLUMN_NAME = "begin_time";
   public static final String END_TIME_COLUMN_NAME = "end_time";
   public static final String DESCRIPTION_COLUMN_NAME = "description";
+  public static final String TRACE_TABLE_NAMES_COLUMN_NAME = "tables";
 
-  private final DbColumn dbColumnTraceIndex;
-  private final DbColumn dbColumnTraceUrl;
-  private final DbColumn dbColumnBeginTime;
-  private final DbColumn dbColumnEndTime;
-  private final DbColumn dbColumnDescription;
+  private final Column columnTraceIndex;
+  private final Column columnTraceUrl;
+  private final Column columnBeginTime;
+  private final Column columnEndTime;
+  private final Column columnDescription;
+  private final Column columnTraceTableNames;
 
   public MasterTraceTable(Database db) {
-    super(db);
+    super(db, TABLE_NAME);
 
-    dbTable = db.getDbSchema().addTable(TABLE_NAME);
-
-    dbColumnTraceIndex = dbTable.addColumn(TRACE_INDEX_COLUMN_NAME, ColumnAffinity.INT.name(),
-        null);
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
     // Integer primary key implies UNIQUE and AUTOINCREMENT.
-    dbTable.primaryKey("[Trace id primary key constraint]", dbColumnTraceIndex.getName());
+    columnTraceIndex.addPrimaryKeyConstraint("[Trace id primary key constraint]");
 
-    dbColumnTraceUrl = dbTable.addColumn(URL_COLUMN_NAME, ColumnAffinity.TEXT.name(), null);
-    dbColumnBeginTime = dbTable.addColumn(BEGIN_TIME_COLUMN_NAME, ColumnAffinity.INT.name(), null);
-    dbColumnEndTime = dbTable.addColumn(END_TIME_COLUMN_NAME, ColumnAffinity.INT.name(), null);
-    dbColumnDescription = dbTable.addColumn(DESCRIPTION_COLUMN_NAME, ColumnAffinity.TEXT.name(),
-        null);
+    columnTraceUrl = addColumn(URL_COLUMN_NAME, Column.URL_COLUMN_TYPE);
+    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
+    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
+    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, Column.TEXT_COLUMN_TYPE);
+    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME, Column.NAME_ARRAY_COLUMN_TYPE);
   }
 
-  public DbColumn getTraceIndexColumn() {
-    return dbColumnTraceIndex;
+  public Column getTraceIndexColumn() {
+    return columnTraceIndex;
   }
 
-  public DbColumn getTraceUrlColumn() {
-    return dbColumnTraceUrl;
+  public Column getTraceUrlColumn() {
+    return columnTraceUrl;
   }
 
-  public DbColumn getBeginTimeColumn() {
-    return dbColumnBeginTime;
+  public Column getBeginTimeColumn() {
+    return columnBeginTime;
   }
 
-  public DbColumn getEndTimeColumn() {
-    return dbColumnEndTime;
+  public Column getEndTimeColumn() {
+    return columnEndTime;
   }
 
-  public DbColumn getDescriptionColumn() {
-    return dbColumnDescription;
+  public Column getDescriptionColumn() {
+    return columnDescription;
+  }
+
+  public Column getTraceTableNamesColumn() {
+    return columnTraceTableNames;
   }
 
   /**
-   * Add an entry in the database for a new trace file. Returns the unique trace ID.
+   * Add an entry in the database for a new trace file. Returns the unique trace ID_COLUMN_TYPE.
    *
-   * @param url trace file URL
-   * @param beginTime begin time of trace (microseconds since epoch) or null if unknown.
-   * @param endTime end time of trace (microseconds since epoch) or null if unknown.
+   * @param url         trace file URL_COLUMN_TYPE
+   * @param beginTime   begin time of trace (microseconds since epoch) or null if unknown.
+   * @param endTime     end time of trace (microseconds since epoch) or null if unknown.
    * @param description human-readable description of trace or null if none.
+   * @param tableNames  names of database tables that contain data for this trace
    * @return trace index
    * @throws SQLException on failure
    */
-  public int addTrace(URL url, Long beginTime, Long endTime, String description)
+  public int addTrace(URL url, Long beginTime, Long endTime, String description, List<String>
+      tableNames)
       throws SQLException {
     String sql =
-        new InsertQuery(dbTable)
-            .addColumn(dbColumnTraceIndex, null)
-            .addColumn(dbColumnTraceUrl, url != null ? url.toString() : null)
-            .addColumn(dbColumnBeginTime, beginTime)
-            .addColumn(dbColumnEndTime, endTime)
-            .addColumn(dbColumnDescription, description)
+        new InsertQuery(getDbTable())
+            .addColumn(columnTraceIndex.getDbColumn(), null)
+            .addColumn(columnTraceUrl.getDbColumn(), url != null ? url.toString() : null)
+            .addColumn(columnBeginTime.getDbColumn(), beginTime)
+            .addColumn(columnEndTime.getDbColumn(), endTime)
+            .addColumn(columnDescription.getDbColumn(), description)
+            .addColumn(columnTraceTableNames.getDbColumn(), encodeTableNames(tableNames))
             .validate().toString();
-    Statement statement = db.createStatement();
+    Statement statement = getDatabase().createStatement();
     statement.executeUpdate(sql);
 
     ResultSet resultSet = statement.getGeneratedKeys();
@@ -108,11 +115,16 @@ public class MasterTraceTable extends AbstractTable {
 
     String sql =
         new SelectQuery()
-            .addFromTable(dbTable)
-            .addColumns(dbColumnTraceUrl, dbColumnBeginTime, dbColumnEndTime, dbColumnDescription)
+            .addFromTable(getDbTable())
+            .addColumns(columnTraceUrl.getDbColumn(),
+                columnBeginTime.getDbColumn(),
+                columnEndTime.getDbColumn(),
+                columnDescription.getDbColumn(),
+                columnTraceTableNames.getDbColumn())
             .validate().toString();
 
-    try (Statement statement = db.createStatement();
+
+    try (Statement statement = getDatabase().createStatement();
          ResultSet resultSet = statement.executeQuery(sql)) {
       while (resultSet.next()) {
         TraceInfo traceInfo = new TraceInfo();
@@ -121,18 +133,31 @@ public class MasterTraceTable extends AbstractTable {
         long beginTime = resultSet.getLong(2);
         long endTime = resultSet.getLong(3);
         String description = resultSet.getString(4);
+        List<String> traceTableNames = decodeTableNames(resultSet.getString(5));
 
         traceInfo.setTraceId(Integer.toString(traceIndex));
         traceInfo.setTraceUrl(traceUrl);
         traceInfo.setBeginTime(beginTime);
         traceInfo.setEndTime(endTime);
         traceInfo.setDescription(description);
+        traceInfo.setTableNames(traceTableNames);
 
         result.add(traceInfo);
       }
     }
 
     return result;
+  }
+
+  private String encodeTableNames(List<String> tableNames) {
+    String result = tableNames.toString();
+    // String off leading '[' and trailing ']'.
+    result = result.substring(1, result.length() - 1);
+    return result;
+  }
+
+  private List<String> decodeTableNames(String encodedTableNames) {
+    return Arrays.asList(encodedTableNames.split(", "));
   }
 }
 

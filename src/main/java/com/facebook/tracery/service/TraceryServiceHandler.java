@@ -1,11 +1,11 @@
 package com.facebook.tracery.service;
 
 import com.facebook.tracery.database.Database;
-import com.facebook.tracery.database.trace.FileInfoTable;
+import com.facebook.tracery.database.Table;
 import com.facebook.tracery.database.trace.MasterTraceTable;
-import com.facebook.tracery.thrift.FileInfo;
 import com.facebook.tracery.thrift.TraceInfo;
 import com.facebook.tracery.thrift.TraceryService;
+import com.facebook.tracery.thrift.table.TableInfo;
 import org.apache.thrift.TException;
 
 import java.util.List;
@@ -28,10 +28,10 @@ public class TraceryServiceHandler implements TraceryService.Iface {
   }
 
   @Override
-  public List<FileInfo> getFiles() throws TException {
-    FileInfoTable fileInfoTable = new FileInfoTable(db);
+  public TableInfo getTable(String tableName) throws TException {
     try {
-      return fileInfoTable.getFileInfos();
+      Table table = Table.createTable(db, tableName);
+      return table.getTableInfo();
     } catch (Exception ex) {
       throw new TException(ex);
     }

@@ -3,9 +3,9 @@ package com.facebook.tracery.command;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.facebook.tracery.thrift.FileInfo;
 import com.facebook.tracery.thrift.TraceInfo;
 import com.facebook.tracery.thrift.TraceryService;
+import com.facebook.tracery.thrift.table.TableInfo;
 import org.apache.thrift.protocol.TJSONProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
@@ -44,10 +44,13 @@ public class ClientCommand extends AbstractCommand {
     TraceryService.Client client = new TraceryService.Client(protocol);
 
     List<TraceInfo> traces = client.getTraces();
-    System.out.println(traces);
-
-    List<FileInfo> files = client.getFiles();
-    System.out.println(files);
+    for (TraceInfo trace : traces) {
+      System.out.println(trace);
+      for (String tableName : trace.getTableNames()) {
+        TableInfo tableInfo = client.getTable(tableName);
+        System.out.println("\t" + tableName + ": " + tableInfo);
+      }
+    }
 
     transport.close();
   }

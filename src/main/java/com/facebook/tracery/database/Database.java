@@ -2,7 +2,6 @@ package com.facebook.tracery.database;
 
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +24,8 @@ public class Database {
   private final File file;
   private Connection connection;
 
-  protected DbSpec dbSpec;
-  protected DbSchema dbSchema;
+  private DbSpec dbSpec;
+  private DbSchema dbSchema;
 
   public enum Access {
     READ_ONLY,
@@ -35,25 +34,12 @@ public class Database {
 
   public Database(File file) throws ClassNotFoundException {
     this.file = file;
-  }
 
-  public void disconnect() {
-    if (connection != null) {
-      try {
-        connection.close();
-      } catch (SQLException ex) {
-        logger.error("Error closing SQL connection.", ex);
-      }
-      connection = null;
-      dbSpec = null;
-      dbSchema = null;
-    }
-  }
-
-  public void connect(Access access) throws ClassNotFoundException, SQLException {
     // Load the sqlite-JDBC driver using the current class loader.
     Class.forName("org.sqlite.JDBC");
+  }
 
+  public void connect(Access access) throws SQLException {
     if (connection == null) {
       SQLiteConfig config = new SQLiteConfig();
       config.setReadOnly(access != Access.READ_WRITE);
@@ -71,6 +57,19 @@ public class Database {
 
   public Connection getConnection() {
     return connection;
+  }
+
+  public void disconnect() {
+    if (connection != null) {
+      try {
+        connection.close();
+      } catch (SQLException ex) {
+        logger.error("Error closing SQL connection.", ex);
+      }
+      connection = null;
+      dbSpec = null;
+      dbSchema = null;
+    }
   }
 
   public DbSpec getDbSpec() {

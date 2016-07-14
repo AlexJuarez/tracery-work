@@ -13,10 +13,10 @@ import com.facebook.tracery.parse.diskio.FileInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptException;
@@ -82,8 +82,9 @@ public class InsertTraceCommand extends AbstractCommand {
     Long beginTime = System.currentTimeMillis() * 1000L; // FIXME
     Long endTime = beginTime; // FIXME
     String description = "Disk I/O profile."; // FIXME
+    String[] traceTableNames = new String[] { diskPhysOpTable.getName(), fileInfoTable.getName() };
     int traceIndex = masterTraceTable.addTrace(traceFile.toURI().toURL(), beginTime, endTime,
-        description);
+        description, Arrays.asList(traceTableNames));
 
     insertDiskTraceFileInfos(traceParser, db, traceIndex, fileInfoTable);
     insertDiskTracePhysOps(traceParser, db, traceIndex, diskPhysOpTable);
