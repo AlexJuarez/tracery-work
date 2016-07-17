@@ -6,7 +6,6 @@ import com.beust.jcommander.Parameters;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.service.TraceryServiceHandler;
 import com.facebook.tracery.thrift.TraceryService;
-import org.apache.logging.log4j.Level;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -54,7 +53,7 @@ public class ServerCommand extends AbstractCommand {
       TServerTransport serverTransport = new TServerSocket(port);
       TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
 
-      logger.printf(Level.INFO, "Tracery service started - serving %s on port %d.", dbFile, port);
+      logger.info("Tracery service started - serving {} on port {}.", dbFile, port);
 
       server.serve();
     } finally {

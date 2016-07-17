@@ -8,13 +8,13 @@ import com.facebook.tracery.command.ClientCommand;
 import com.facebook.tracery.command.InsertTraceCommand;
 import com.facebook.tracery.command.ServerCommand;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Parameters(commandDescription = "Tracery service.")
 public class Main {
-  private Logger logger = LogManager.getRootLogger();
+  private Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
   @Parameter(names = "--help", help = true, hidden = true)
   public boolean help = false;
