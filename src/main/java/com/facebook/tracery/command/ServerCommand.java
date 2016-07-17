@@ -6,14 +6,19 @@ import com.beust.jcommander.Parameters;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.service.TraceryServiceHandler;
 import com.facebook.tracery.thrift.TraceryService;
-import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TSimpleServer;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
+import com.linecorp.armeria.common.SerializationFormat;
+import com.linecorp.armeria.common.SessionProtocol;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.ServerListenerAdapter;
+import com.linecorp.armeria.server.http.tomcat.TomcatService;
+import com.linecorp.armeria.server.logging.LoggingService;
+import com.linecorp.armeria.server.thrift.ThriftService;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 @Parameters(commandDescription = "Serve trace data from the tracery database.")
 public class ServerCommand extends AbstractCommand {
@@ -47,15 +52,32 @@ public class ServerCommand extends AbstractCommand {
       db.connect(Database.Access.READ_ONLY);
 
       TraceryServiceHandler handler = new TraceryServiceHandler(db);
-      TraceryService.Processor<TraceryServiceHandler> processor =
-          new TraceryService.Processor<>(handler);
 
-      TServerTransport serverTransport = new TServerSocket(port);
-      TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+      ServerBuilder sb = new ServerBuilder();
+      sb.port(port, SessionProtocol.HTTP);
+      sb.serviceAt(
+              "/api",
+              ThriftService.of(handler, SerializationFormat.THRIFT_JSON)
+                      .decorate(LoggingService::new)).build();
+      sb.serviceUnder(
+          "/",
+          TomcatService.forFileSystem(
+              new File(System.getenv("APP_HOME"), "build").getAbsolutePath()));
+
+      Server server = sb.build();
+      final CountDownLatch serverStopped = new CountDownLatch(1);
+      server.addListener(new ServerListenerAdapter() {
+        @Override
+        public void serverStopped(Server server) throws Exception {
+          serverStopped.countDown();
+        }
+      });
+      server.start().sync();
 
       logger.info("Tracery service started - serving {} on port {}.", dbFile, port);
 
-      server.serve();
+      serverStopped.await();
+      logger.info("Tracery service stopped.");
     } finally {
       db.disconnect();
     }

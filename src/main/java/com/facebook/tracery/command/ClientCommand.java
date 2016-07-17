@@ -6,11 +6,12 @@ import com.beust.jcommander.Parameters;
 import com.facebook.tracery.thrift.FileInfo;
 import com.facebook.tracery.thrift.TraceInfo;
 import com.facebook.tracery.thrift.TraceryService;
-import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TJSONProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransport;
 
+import java.net.URL;
 import java.util.List;
 
 @Parameters(commandDescription = "Test client for tracery service.")
@@ -35,10 +36,11 @@ public class ClientCommand extends AbstractCommand {
 
     TTransport transport;
 
-    transport = new TSocket("localhost", port);
+    // The server (which is written more for JavaScript clients) requires JSON over HTTP
+    transport = new THttpClient(new URL("http", "localhost", port, "/api").toString());
     transport.open();
 
-    TProtocol protocol = new TBinaryProtocol(transport);
+    TProtocol protocol = new TJSONProtocol(transport);
     TraceryService.Client client = new TraceryService.Client(protocol);
 
     List<TraceInfo> traces = client.getTraces();
