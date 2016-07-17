@@ -19,6 +19,8 @@ class BrowserHost extends React.Component {
     this.state = getDocumentClientDimensions();
   }
 
+  props: Props;
+
   state: {
     height: number;
     width: number;
@@ -31,8 +33,6 @@ class BrowserHost extends React.Component {
   componentWillUnmount() {
     window.onresize = undefined;
   }
-
-  props: Props;
 
   handleResize() {
     window.requestAnimationFrame((): void => this.setState(getDocumentClientDimensions()));

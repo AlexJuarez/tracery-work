@@ -3,9 +3,11 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../build/classes/main" />
     <exclude-output />
+    <content url="file://$MODULE_DIR$/../../build/generated-sources/thrift/gen-java">
+      <sourceFolder url="file://$MODULE_DIR$/../../build/generated-sources/thrift/gen-java" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/../../src/main">
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../src/main/java-gen" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/python/parse/diskio" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
     </content>

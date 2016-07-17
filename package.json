@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "The unified trace-analysis platform.",
   "scripts": {
-    "build": "webpack",
+    "build": "npm run thrift && webpack",
     "coverage": "npm run test -- --coverage",
     "flow": "flow",
     "lint": "eslint --ext .js --ext .jsx",
@@ -11,7 +11,8 @@
     "fix-all": "npm run lint -- --fix .",
     "jest": "jest",
     "start": "webpack-dev-server --hot",
-    "test": "npm-run-all -sc flow jest lint-all"
+    "test": "npm-run-all -sc build flow jest lint-all",
+    "thrift": "./gradlew compileThrift"
   },
   "dependencies": {
     "invariant": "^2.2.1",
@@ -48,8 +49,10 @@
     "eslint-plugin-import": "^1.10.2",
     "eslint-plugin-jsx-a11y": "^1.3.0",
     "eslint-plugin-react": "^5.1.1",
+    "exports-loader": "^0.6.3",
     "flow-bin": "^0.28.0",
     "html-webpack-plugin": "^2.19.0",
+    "imports-loader": "^0.6.5",
     "jest-cli": "^12.1.1",
     "npm-run-all": "^2.3.0",
     "react-addons-test-utils": "^15.1.0",
