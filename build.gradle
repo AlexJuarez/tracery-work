@@ -42,10 +42,29 @@ tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
         html.enabled = true
+        html.destination "$buildDir/reports/findbugs/${task.name}.html"
     }
 
     classes = classes.filter {
         !it.path.contains(new File("com/facebook/tracery/thrift").path)
+    }
+
+    def taskName = it.name
+    def taskState = it.state
+    def reportTask = tasks.create(name: GUtil.toCamelCase(taskName) + "Report")
+    def reportPath = "$buildDir/reports/findbugs/${taskName}.html"
+    reportTask.description "Convert FindBugs report from $taskName from HTML to text."
+    it.finalizedBy reportTask
+    reportTask << {
+        if (taskState.failure != null) {
+            printFindBugsReport(reportPath)
+        }
+    }
+}
+def printFindBugsReport(String reportPath) {
+    exec {
+        executable "sh"
+        args "-c", "if command -v html2text >/dev/null; then html2text \"${reportPath}\"; fi"
     }
 }
 

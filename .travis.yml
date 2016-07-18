@@ -29,6 +29,7 @@ addons:
       - pkg-config
       - g++
       - libssl-dev
+      - html2text
 
 before_install:
   # Newer gradle for checkstyle (https://issues.gradle.org/browse/GRADLE-3314)
