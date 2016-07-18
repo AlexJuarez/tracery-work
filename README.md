@@ -55,25 +55,25 @@ brew install thrift
 ### Build
 
 ```
-gradle fatJar
+./gradlew fatJar
 ```
 
 Or to build and test everything:
 ```
-gradle build
+./gradlew build
 ```
 
 ### Run
 
 ```
-gradle run
+./gradlew run
 ```
 
 ### Test
 
 #### Checkstyle, Findbugs and Unit Tests
 ```
-gradle check
+./gradlew check
 ```
 Reports are in `build/reports/{checkstyle, findbugs}/`.
 
@@ -81,7 +81,7 @@ Reports are in `build/reports/{checkstyle, findbugs}/`.
 
 Build everything into a single executable jar file:
 ```
-gradle fatJar
+./gradlew fatJar
 ```
 
 Run the executable jar file:

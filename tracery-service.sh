@@ -39,7 +39,7 @@ APP_JAR="${APP_HOME}/build/libs/tracery-service-all-1.0.jar"
 
 if [ ! -f ${APP_JAR} ]; then
     warn "WARNING: application jar not found - attempting to build"
-    gradle fatJar --quiet
+    ${APP_HOME}/gradlew fatJar --quiet
 fi
 
 # Add default JVM options here. You can also use JAVA_OPTS and TRACERY_SERVICE_OPTS to pass JVM options to this script.

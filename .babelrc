@@ -3,6 +3,11 @@
     "react-hot-loader/babel",
     "transform-es2015-modules-commonjs",
 
+    // Stage 2 proposal; useful for redux
+    "transform-object-rest-spread",
+    // Currently required by transform-object-rest-spread
+    "transform-es2015-destructuring",
+
     // TODO: Remove these two when https://github.com/gaearon/react-hot-loader/issues/313 is fixed
     "transform-class-properties",
     "transform-es2015-classes"

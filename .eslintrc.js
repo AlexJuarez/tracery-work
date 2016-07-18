@@ -34,4 +34,7 @@ module.exports = {
       "no-duplicate-imports": "off",
       "import/no-duplicates": "error",
     },
+    "settings": {
+      "import/resolver": "webpack",
+    }
 };
