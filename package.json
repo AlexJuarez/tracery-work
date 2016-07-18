@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "The unified trace-analysis platform.",
   "scripts": {
+    "build": "webpack",
     "coverage": "npm run test -- --coverage",
     "flow": "flow",
     "lint": "eslint --ext .js --ext .jsx",

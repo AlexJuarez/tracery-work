@@ -4,8 +4,8 @@ import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
 import java.io.File;
@@ -20,7 +20,7 @@ import java.sql.Statement;
 public class Database {
   private static final int DEFAULT_STATEMENT_TIMEOUT_SEC = 30;
 
-  private final Logger logger = LogManager.getLogger(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private final File file;
   private Connection connection;
@@ -42,7 +42,7 @@ public class Database {
       try {
         connection.close();
       } catch (SQLException ex) {
-        logger.error(ex);
+        logger.error("Error closing SQL connection.", ex);
       }
       connection = null;
       dbSpec = null;
