@@ -8,7 +8,7 @@ import { getAppMode } from './state';
 import * as appModes from './state/appMode';
 
 import StartupMenu from './StartupMenu';
-import List from './ui/controls/List';
+import TraceList from './TraceList';
 import DevTools from './ui/devtools/DevTools';
 
 import * as actions from './actions';
@@ -46,7 +46,7 @@ function renderContent(props: Props): ?React.Element<any> {
     case appModes.STARTUP:
       return <StartupMenu onLoadClicked={props.onLoadClicked} />;
     case appModes.SELECT_TRACE:
-      return <List items={['Hello World!']} />;
+      return <TraceList />;
     default:
       return null;
   }

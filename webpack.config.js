@@ -9,9 +9,9 @@ const THRIFT_GENERATED_SRC_DIR = path.join(__dirname, 'build/generated-sources/t
 module.exports = {
   devtool: 'source-map',
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:8080',
-    'webpack/hot/only-dev-server',
-    'react-hot-loader/patch',
+    //    'webpack-dev-server/client?http://0.0.0.0:8080',
+    //    'webpack/hot/only-dev-server',
+    //    'react-hot-loader/patch',
     './src/main/js/index.jsx',
   ],
   module: {
