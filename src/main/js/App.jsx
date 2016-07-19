@@ -7,8 +7,11 @@ import type { State } from './state';
 import { getAppMode } from './state';
 import * as appModes from './state/appMode';
 
-import Hello from './Hello';
+import StartupMenu from './StartupMenu';
+import List from './ui/controls/List';
 import DevTools from './ui/devtools/DevTools';
+
+import * as actions from './actions';
 
 type StateProps = {
   appMode: string,
@@ -19,6 +22,7 @@ type Props = {
   height: number,
   /** Width in dips */
   width: number,
+  onLoadClicked: (event: SyntheticMouseEvent) => boolean,
 } & StateProps;
 
 /** Root Application element, regardless of host environment. */
@@ -40,7 +44,9 @@ function App(props: Props): React.Element<*> {
 function renderContent(props: Props): ?React.Element<any> {
   switch (props.appMode) {
     case appModes.STARTUP:
-      return <Hello />;
+      return <StartupMenu onLoadClicked={props.onLoadClicked} />;
+    case appModes.SELECT_TRACE:
+      return <List items={['Hello World!']} />;
     default:
       return null;
   }
@@ -52,4 +58,8 @@ function mapStateToProps(state: State): StateProps {
   };
 }
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = {
+  onLoadClicked: actions.loadTrace,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
