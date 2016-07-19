@@ -77,6 +77,11 @@ compileThrift {
     outputDir 'src/main/java-gen'
 }
 
+task cleanThrift(type: Exec) {
+    commandLine 'rm', '-rf', 'src/main/java-gen'
+}
+compileThrift.dependsOn cleanThrift
+
 // Create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
