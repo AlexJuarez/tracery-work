@@ -33,18 +33,14 @@ public abstract class Table {
   /**
    * Constructor for automatically binding table name to type.
    */
-  public Table(Database db) {
+  public Table(Database db) throws SQLException {
     this.db = db;
-    dbTable = db.getDbSchema().addTable(getTableName(getClass()));
+    String tableName = getTableName(getClass());
+    dbTable = db.getDbSchema().addTable(tableName);
+    setupColumns();
   }
 
-  /**
-   * Constructor for specifying a custom name.
-   */
-  public Table(Database db, String tableName) {
-    this.db = db;
-    dbTable = db.getDbSchema().addTable(tableName);
-  }
+  protected abstract void setupColumns() throws SQLException;
 
   public Database getDatabase() {
     return db;
@@ -63,6 +59,13 @@ public abstract class Table {
   }
 
   public boolean drop() throws SQLException {
+    String sql = String.format("DROP TABLE \"%s\"", dbTable.getTableNameSQL());
+    try (Statement statement = db.createStatement()) {
+      return statement.execute(sql);
+    }
+  }
+
+  public boolean dropIfExists() throws SQLException {
     String sql = String.format("DROP TABLE IF EXISTS \"%s\"", dbTable.getTableNameSQL());
     try (Statement statement = db.createStatement()) {
       return statement.execute(sql);
@@ -130,12 +133,16 @@ public abstract class Table {
 
   public static String getTableName(Class<? extends Table> clazz) {
     String className = clazz.getCanonicalName();
+    if (className == null) {
+      throw new IllegalArgumentException("Table class must not be anonymous or local.");
+    }
     if (className.contains("_")) {
       throw new IllegalArgumentException("Table class names must not contain '_'.");
     }
     return className.replace('.', '_');
   }
 
+  @SuppressWarnings("unchecked")
   public static Class<? extends Table> getTableClass(String tableName) throws
       ClassNotFoundException {
     String className = tableName.replace('_', '.');

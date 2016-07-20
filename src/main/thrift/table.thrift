@@ -37,8 +37,8 @@ enum Structure {
 
 struct TableColumnType {
   1: required RawType rawType;
-  2: required Unit unit;
-  3: required Category category;
+  2: required Category category;
+  3: required Unit unit;
   4: required Structure structure;
 }
 

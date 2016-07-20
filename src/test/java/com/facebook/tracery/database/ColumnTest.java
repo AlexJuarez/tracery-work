@@ -41,10 +41,10 @@ public class ColumnTest {
   @Test
   public void testRoundTripEncoding() {
     for (RawType rawType : RawType.values()) {
-      for (Unit unit : Unit.values()) {
-        for (Category category : Category.values()) {
+      for (Category category : Category.values()) {
+        for (Unit unit : Unit.values()) {
           for (Structure structure : Structure.values()) {
-            TableColumnType origType = new TableColumnType(rawType, unit, category, structure);
+            TableColumnType origType = new TableColumnType(rawType, category, unit, structure);
             String encoding = Column.encodeType(origType);
             TableColumnType decodedType = Column.decodeType(encoding);
             Assert.assertEquals(origType, decodedType);

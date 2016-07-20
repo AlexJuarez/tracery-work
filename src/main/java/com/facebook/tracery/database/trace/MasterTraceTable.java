@@ -19,8 +19,6 @@ import java.util.List;
  * Directory of trace data and associated tables.
  */
 public class MasterTraceTable extends Table {
-  public static final String TABLE_NAME = "trace_master";
-
   public static final String TRACE_INDEX_COLUMN_NAME = "trace_idx";
   public static final String URL_COLUMN_NAME = "trace_url";
   public static final String BEGIN_TIME_COLUMN_NAME = "begin_time";
@@ -28,25 +26,15 @@ public class MasterTraceTable extends Table {
   public static final String DESCRIPTION_COLUMN_NAME = "description";
   public static final String TRACE_TABLE_NAMES_COLUMN_NAME = "tables";
 
-  private final Column columnTraceIndex;
-  private final Column columnTraceUrl;
-  private final Column columnBeginTime;
-  private final Column columnEndTime;
-  private final Column columnDescription;
-  private final Column columnTraceTableNames;
+  private Column columnTraceIndex;
+  private Column columnTraceUrl;
+  private Column columnBeginTime;
+  private Column columnEndTime;
+  private Column columnDescription;
+  private Column columnTraceTableNames;
 
-  public MasterTraceTable(Database db) {
-    super(db, TABLE_NAME);
-
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
-    // Integer primary key implies UNIQUE and AUTOINCREMENT.
-    columnTraceIndex.addPrimaryKeyConstraint("[Trace id primary key constraint]");
-
-    columnTraceUrl = addColumn(URL_COLUMN_NAME, Column.URL_COLUMN_TYPE);
-    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, Column.TEXT_COLUMN_TYPE);
-    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME, Column.NAME_ARRAY_COLUMN_TYPE);
+  public MasterTraceTable(Database db) throws SQLException {
+    super(db);
   }
 
   public Column getTraceIndexColumn() {
@@ -71,6 +59,19 @@ public class MasterTraceTable extends Table {
 
   public Column getTraceTableNamesColumn() {
     return columnTraceTableNames;
+  }
+
+  @Override
+  protected void setupColumns() {
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
+    // Integer primary key implies UNIQUE and AUTOINCREMENT.
+    columnTraceIndex.addPrimaryKeyConstraint("[Trace id primary key constraint]");
+
+    columnTraceUrl = addColumn(URL_COLUMN_NAME, Column.URL_COLUMN_TYPE);
+    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
+    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
+    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, Column.TEXT_COLUMN_TYPE);
+    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME, Column.NAME_ARRAY_COLUMN_TYPE);
   }
 
   /**

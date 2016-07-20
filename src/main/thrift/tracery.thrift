@@ -1,5 +1,6 @@
 include "type.thrift"
 include "table.thrift"
+include "query.thrift"
 
 namespace java com.facebook.tracery.thrift
 
@@ -17,4 +18,6 @@ service TraceryService {
   list<TraceInfo> getTraces();
 
   table.TableInfo getTable(1:string tableName);
+
+  query.QueryResult query(1:query.Query query);
 }
