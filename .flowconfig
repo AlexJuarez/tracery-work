@@ -9,6 +9,7 @@ src/main/js
 
 [options]
 module.name_mapper='^\(.*\)\.css$' -> '<PROJECT_ROOT>/CSSModule.js.flow'
+module.name_mapper='^\(.*\)\.less$' -> '<PROJECT_ROOT>/CSSModule.js.flow'
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 suppress_comment= \\(.\\|\n\\)*\\$FlowIssue
 
