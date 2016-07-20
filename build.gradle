@@ -11,6 +11,12 @@ compileJava.options.encoding = 'UTF-8'
 
 mainClassName = "com.facebook.tracery.Main"
 
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:all"
+    }
+}
+
 sourceSets {
     // Include the Disk I/O profiler scripts.
     main {
