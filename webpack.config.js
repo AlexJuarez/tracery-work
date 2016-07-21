@@ -39,8 +39,7 @@ module.exports = {
       loader: 'exports-loader?TraceryServiceClient!' +
               'imports-loader?' +
                 'Thrift=thrift,' +
-                'tracery_types,' +
-                'TraceInfo=>tracery_types.TraceInfo',
+                'TraceInfo=tracery_types',
     },
     {
       test: /\.css$/,
