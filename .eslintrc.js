@@ -40,7 +40,7 @@ module.exports = {
         // Change the sort order for react es6 components such that
         // the constructor and props come first followed by
         // the functions in alphabetical order.
-        "react/sort-comp": [1, {
+        "react/sort-comp": ["error", {
             order: ["static-methods", "lifecycle", "everything-else", "render"],
             groups: {
                 lifecycle: [
