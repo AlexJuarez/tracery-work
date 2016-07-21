@@ -7,6 +7,9 @@
 node_modules/
 src/main/js
 
+[libs]
+src/main/flow
+
 [options]
 module.name_mapper='^\(.*\)\.css$' -> '<PROJECT_ROOT>/CSSModule.js.flow'
 module.name_mapper='^\(.*\)\.less$' -> '<PROJECT_ROOT>/CSSModule.js.flow'

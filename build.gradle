@@ -98,8 +98,8 @@ jacocoTestReport {
 check.dependsOn jacocoTestReport
 
 compileThrift {
-    createGenFolder false
-    outputDir 'src/main/java-gen'
+    generator 'java'
+    generator 'js:ts'
 }
 
 task cleanThrift {
