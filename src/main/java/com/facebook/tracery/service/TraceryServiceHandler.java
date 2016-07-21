@@ -5,6 +5,8 @@ import com.facebook.tracery.database.Table;
 import com.facebook.tracery.database.trace.MasterTraceTable;
 import com.facebook.tracery.thrift.TraceInfo;
 import com.facebook.tracery.thrift.TraceryService;
+import com.facebook.tracery.thrift.query.Query;
+import com.facebook.tracery.thrift.query.QueryResult;
 import com.facebook.tracery.thrift.table.TableInfo;
 import org.apache.thrift.TException;
 
@@ -19,8 +21,8 @@ public class TraceryServiceHandler implements TraceryService.Iface {
 
   @Override
   public List<TraceInfo> getTraces() throws TException {
-    MasterTraceTable masterTraceTable = new MasterTraceTable(db);
     try {
+      MasterTraceTable masterTraceTable = db.getTableByClass(MasterTraceTable.class);
       return masterTraceTable.getTraceInfos();
     } catch (Exception ex) {
       throw new TException(ex);
@@ -30,8 +32,17 @@ public class TraceryServiceHandler implements TraceryService.Iface {
   @Override
   public TableInfo getTable(String tableName) throws TException {
     try {
-      Table table = Table.createTable(db, tableName);
+      Table table = db.getTableByName(tableName);
       return table.getTableInfo();
+    } catch (Exception ex) {
+      throw new TException(ex);
+    }
+  }
+
+  @Override
+  public QueryResult query(Query select) throws TException {
+    try {
+      return db.doQuery(select);
     } catch (Exception ex) {
       throw new TException(ex);
     }

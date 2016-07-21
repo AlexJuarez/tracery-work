@@ -20,23 +20,15 @@ public class FileInfoTable extends Table {
   public static final String FILE_SIZE_COLUMN_NAME = "file_size";
   public static final String INODE_COLUMN_NAME = "inode";
 
-  private final Column columnTraceIndex;
-  private final Column columnFileName;
-  private final Column columnFileSize;
-  private final Column columnInode;
+  private Column columnTraceIndex;
+  private Column columnFileName;
+  private Column columnFileSize;
+  private Column columnInode;
 
-  public FileInfoTable(Database db) {
+  public FileInfoTable(Database db) throws SQLException {
     super(db);
-
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
-    columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
-        MasterTraceTable.TABLE_NAME,
-        MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
-
-    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
-    columnFileSize = addColumn(FILE_SIZE_COLUMN_NAME, Column.BYTES_COLUMN_TYPE);
-    columnInode = addColumn(INODE_COLUMN_NAME, Column.ID_COLUMN_TYPE);
   }
+
 
   public Column getTraceIndexColumn() {
     return columnTraceIndex;
@@ -52,6 +44,18 @@ public class FileInfoTable extends Table {
 
   public Column getInodeColumn() {
     return columnInode;
+  }
+
+  @Override
+  protected void setupColumns() {
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
+    columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
+        Table.getTableName(MasterTraceTable.class),
+        MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
+
+    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
+    columnFileSize = addColumn(FILE_SIZE_COLUMN_NAME, Column.BYTES_COLUMN_TYPE);
+    columnInode = addColumn(INODE_COLUMN_NAME, Column.ID_COLUMN_TYPE);
   }
 
   public int indexOfFile(int traceIndex, String fileName) throws SQLException {

@@ -57,7 +57,7 @@ public class InsertTraceCommand extends AbstractCommand {
     try {
       db.connect(Database.Access.READ_WRITE);
 
-      MasterTraceTable masterTraceTable = new MasterTraceTable(db);
+      MasterTraceTable masterTraceTable = db.getTableByClass(MasterTraceTable.class);
       masterTraceTable.create();
 
       for (String traceFile : diskTraceFiles) {
@@ -70,10 +70,10 @@ public class InsertTraceCommand extends AbstractCommand {
 
   private void insertDiskTrace(File traceFile, Database db, MasterTraceTable masterTraceTable)
       throws IOException, SQLException, ScriptException, NoSuchMethodException {
-    DiskPhysOpTable diskPhysOpTable = new DiskPhysOpTable(db);
+    DiskPhysOpTable diskPhysOpTable = db.getTableByClass(DiskPhysOpTable.class);
     diskPhysOpTable.create();
 
-    FileInfoTable fileInfoTable = new FileInfoTable(db);
+    FileInfoTable fileInfoTable = db.getTableByClass(FileInfoTable.class);
     fileInfoTable.create();
 
     DiskTraceParser traceParser = new DiskTraceParser(traceFile);
@@ -82,9 +82,8 @@ public class InsertTraceCommand extends AbstractCommand {
     Long beginTime = System.currentTimeMillis() * 1000L; // FIXME
     Long endTime = beginTime; // FIXME
     String description = "Disk I/O profile."; // FIXME
-    String[] traceTableNames = new String[] { diskPhysOpTable.getName(), fileInfoTable.getName() };
     int traceIndex = masterTraceTable.addTrace(traceFile.toURI().toURL(), beginTime, endTime,
-        description, Arrays.asList(traceTableNames));
+        description, Arrays.asList(diskPhysOpTable.getName(), fileInfoTable.getName()));
 
     insertDiskTraceFileInfos(traceParser, db, traceIndex, fileInfoTable);
     insertDiskTracePhysOps(traceParser, db, traceIndex, diskPhysOpTable);

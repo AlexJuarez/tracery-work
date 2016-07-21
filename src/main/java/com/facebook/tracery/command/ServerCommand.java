@@ -5,7 +5,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.service.TraceryServiceHandler;
-import com.facebook.tracery.thrift.TraceryService;
 import com.linecorp.armeria.common.SerializationFormat;
 import com.linecorp.armeria.common.SessionProtocol;
 import com.linecorp.armeria.server.Server;
@@ -56,9 +55,9 @@ public class ServerCommand extends AbstractCommand {
       ServerBuilder sb = new ServerBuilder();
       sb.port(port, SessionProtocol.HTTP);
       sb.serviceAt(
-              "/api",
-              ThriftService.of(handler, SerializationFormat.THRIFT_JSON)
-                      .decorate(LoggingService::new)).build();
+          "/api",
+          ThriftService.of(handler, SerializationFormat.THRIFT_JSON)
+              .decorate(LoggingService::new)).build();
       sb.serviceUnder(
           "/",
           TomcatService.forFileSystem(

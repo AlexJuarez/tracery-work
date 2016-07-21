@@ -17,66 +17,66 @@ public class Column {
    */
   public static final TableColumnType INDEX_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
-      Unit.NONE,
       Category.ID,
+      Unit.NONE,
       Structure.SCALAR);
   public static final TableColumnType COUNT_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
-      Unit.NONE,
       Category.QUANTITY,
+      Unit.NONE,
       Structure.SCALAR);
   public static final TableColumnType BYTES_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
-      Unit.BYTES,
       Category.QUANTITY,
+      Unit.BYTES,
       Structure.SCALAR);
   public static final TableColumnType TEXT_COLUMN_TYPE = new TableColumnType(
       RawType.STRING,
-      Unit.NONE,
       Category.OTHER,
+      Unit.NONE,
       Structure.SCALAR);
 
   public static final TableColumnType DURATION_COLUMN_TYPE = new TableColumnType(
       RawType.FLOAT,
-      Unit.SECONDS,
       Category.QUANTITY,
+      Unit.SECONDS,
       Structure.SCALAR);
   public static final TableColumnType TIMESTAMP_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
-      Unit.MICROSECONDS,
       Category.TIMESTAMP,
+      Unit.MICROSECONDS,
       Structure.SCALAR);
 
   public static final TableColumnType NAME_COLUMN_TYPE = new TableColumnType(
       RawType.STRING,
-      Unit.NONE,
       Category.ID,
+      Unit.NONE,
       Structure.SCALAR);
   public static final TableColumnType NAME_ARRAY_COLUMN_TYPE = new TableColumnType(
       RawType.STRING,
-      Unit.NONE,
       Category.ID,
+      Unit.NONE,
       Structure.ARRAY);
   public static final TableColumnType ID_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
-      Unit.NONE,
       Category.ID,
+      Unit.NONE,
       Structure.SCALAR);
   public static final TableColumnType ID_ARRAY_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
-      Unit.NONE,
       Category.ID,
+      Unit.NONE,
       Structure.ARRAY);
 
   public static final TableColumnType PATH_COLUMN_TYPE = new TableColumnType(
       RawType.STRING,
-      Unit.NONE,
       Category.PATH,
+      Unit.NONE,
       Structure.SCALAR);
   public static final TableColumnType URL_COLUMN_TYPE = new TableColumnType(
       RawType.STRING,
-      Unit.NONE,
       Category.URL,
+      Unit.NONE,
       Structure.SCALAR);
 
   private DbTable dbTable;
@@ -197,6 +197,6 @@ public class Column {
     if (structure == null) {
       throw new IllegalArgumentException("Unknown structure encoding: '" + typeString + "'");
     }
-    return new TableColumnType(rawType, unit, category, structure);
+    return new TableColumnType(rawType, category, unit, structure);
   }
 }

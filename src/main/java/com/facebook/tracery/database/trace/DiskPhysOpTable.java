@@ -4,11 +4,6 @@ import com.facebook.tracery.database.Column;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.database.Table;
 import com.facebook.tracery.parse.diskio.DiskTraceItem;
-import com.facebook.tracery.thrift.table.Category;
-import com.facebook.tracery.thrift.table.RawType;
-import com.facebook.tracery.thrift.table.Structure;
-import com.facebook.tracery.thrift.table.TableColumnType;
-import com.facebook.tracery.thrift.table.Unit;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 
 import java.sql.SQLException;
@@ -30,33 +25,20 @@ public class DiskPhysOpTable extends Table {
   public static final String PAGES_COLUMN_NAME = "pages";
   public static final String SECTORS_COLUMN_NAME = "sectors";
 
-  private final Column columnTraceIndex;
-  private final Column columnBeginTime;
-  private final Column columnEndTime;
-  private final Column columnFileOp;
-  private final Column columnThreadName;
-  private final Column columnCpu;
-  private final Column columnFileName;
-  private final Column columnPageCount;
-  private final Column columnPages;
-  private final Column columnSectors;
+  private Column columnTraceIndex;
+  private Column columnBeginTime;
+  private Column columnEndTime;
+  private Column columnFileOp;
+  private Column columnThreadName;
+  private Column columnCpu;
+  private Column columnFileName;
+  private Column columnPageCount;
+  private Column columnPages;
+  private Column columnSectors;
 
-  public DiskPhysOpTable(Database db) {
+
+  public DiskPhysOpTable(Database db) throws SQLException {
     super(db);
-
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
-    columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
-        MasterTraceTable.TABLE_NAME, MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
-
-    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnFileOp = addColumn(FILE_OP_COLUMN_NAME, Column.NAME_COLUMN_TYPE);
-    columnThreadName = addColumn(THREAD_NAME_COLUMN_NAME, Column.NAME_COLUMN_TYPE);
-    columnCpu = addColumn(CPU_COLUMN_NAME, Column.ID_COLUMN_TYPE);
-    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
-    columnPageCount = addColumn(PAGE_COUNT_COLUMN_NAME, Column.COUNT_COLUMN_TYPE);
-    columnPages = addColumn(PAGES_COLUMN_NAME, Column.ID_ARRAY_COLUMN_TYPE);
-    columnSectors = addColumn(SECTORS_COLUMN_NAME, Column.ID_ARRAY_COLUMN_TYPE);
   }
 
   public Column getTraceIndexColumn() {
@@ -97,6 +79,24 @@ public class DiskPhysOpTable extends Table {
 
   public Column getSectorsColumn() {
     return columnSectors;
+  }
+
+  @Override
+  protected void setupColumns() {
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
+    columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
+        Table.getTableName(MasterTraceTable.class),
+        MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
+
+    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
+    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
+    columnFileOp = addColumn(FILE_OP_COLUMN_NAME, Column.NAME_COLUMN_TYPE);
+    columnThreadName = addColumn(THREAD_NAME_COLUMN_NAME, Column.NAME_COLUMN_TYPE);
+    columnCpu = addColumn(CPU_COLUMN_NAME, Column.ID_COLUMN_TYPE);
+    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
+    columnPageCount = addColumn(PAGE_COUNT_COLUMN_NAME, Column.COUNT_COLUMN_TYPE);
+    columnPages = addColumn(PAGES_COLUMN_NAME, Column.ID_ARRAY_COLUMN_TYPE);
+    columnSectors = addColumn(SECTORS_COLUMN_NAME, Column.ID_ARRAY_COLUMN_TYPE);
   }
 
   public void insertBatch(Statement statement, int traceIdx, DiskTraceItem item) throws

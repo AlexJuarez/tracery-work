@@ -7,7 +7,6 @@ import com.beust.jcommander.Parameters;
 import com.facebook.tracery.command.ClientCommand;
 import com.facebook.tracery.command.InsertTraceCommand;
 import com.facebook.tracery.command.ServerCommand;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

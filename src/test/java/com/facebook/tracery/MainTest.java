@@ -1,9 +1,11 @@
 package com.facebook.tracery;
 
 import com.beust.jcommander.JCommander;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MainTest {
   private Main main;
@@ -20,7 +22,7 @@ public class MainTest {
     String[] args = {"--help"};
     boolean status = main.run(jcommander, args);
 
-    Assert.assertTrue(main.help);
-    Assert.assertEquals(true, status);
+    assertTrue(main.help);
+    assertEquals(true, status);
   }
 }
