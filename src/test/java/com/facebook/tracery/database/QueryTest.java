@@ -8,9 +8,11 @@ import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
 import com.facebook.tracery.thrift.query.ResultColumn;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -59,7 +61,7 @@ public class QueryTest {
   @Test
   public void testQuery() throws SQLException {
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("Fido", "3"),
@@ -69,18 +71,18 @@ public class QueryTest {
         Arrays.asList("Fido", "2")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
   @Test
   public void testQueryResultColumn() throws SQLException {
     ResultColumn resultColumn = new ResultColumn(
-        ExpressionUtil.createValueExpression(AGE_COLUMN_NAME),
+        ExpressionFactory.createValueExpression(AGE_COLUMN_NAME),
         Aggregation.NONE);
     query.setResultSet(Arrays.asList(resultColumn));
 
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("3"),
@@ -90,23 +92,23 @@ public class QueryTest {
         Arrays.asList("2")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
   @Test
   public void testQueryWhere() throws SQLException {
-    query.setWhere(ExpressionUtil.createBinaryValueExpression(NAME_COLUMN_NAME, BinaryOperation
+    query.setWhere(ExpressionFactory.createBinaryValueExpression(NAME_COLUMN_NAME, BinaryOperation
         .EQ, "'Fido'"));
 
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("Fido", "3"),
         Arrays.asList("Fido", "2")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -117,7 +119,7 @@ public class QueryTest {
     query.setOrderBy(Arrays.asList(orderByAge, orderByName, orderByRowId));
 
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("Benji", "1"),
@@ -127,16 +129,16 @@ public class QueryTest {
         Arrays.asList("Oreo", "8")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
   @Test
   public void testQueryGroupBy() throws SQLException {
     ResultColumn nameResultColumn = new ResultColumn(
-        ExpressionUtil.createValueExpression(NAME_COLUMN_NAME),
+        ExpressionFactory.createValueExpression(NAME_COLUMN_NAME),
         Aggregation.NONE);
     ResultColumn ageSumColumn = new ResultColumn(
-        ExpressionUtil.createValueExpression(AGE_COLUMN_NAME),
+        ExpressionFactory.createValueExpression(AGE_COLUMN_NAME),
         Aggregation.SUM);
     query.setResultSet(Arrays.asList(nameResultColumn, ageSumColumn));
 
@@ -148,7 +150,7 @@ public class QueryTest {
     query.setGroupBy(Arrays.asList(groupByName));
 
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("Benji", "1"),
@@ -157,7 +159,7 @@ public class QueryTest {
         Arrays.asList("Bear", "8")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -165,14 +167,14 @@ public class QueryTest {
     query.setLimit(2);
 
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("Fido", "3"),
         Arrays.asList("Benji", "1")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -181,14 +183,14 @@ public class QueryTest {
     query.setLimit(2);
 
     QueryResult queryResult = db.doQuery(query);
-    Assert.assertNotNull(queryResult);
+    assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
         Arrays.asList("Oreo", "8"),
         Arrays.asList("Bear", "8")
     );
     List<List<String>> actual = queryResult.getRows();
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 
 

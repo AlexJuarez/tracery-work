@@ -5,18 +5,22 @@ import com.facebook.tracery.thrift.table.RawType;
 import com.facebook.tracery.thrift.table.Structure;
 import com.facebook.tracery.thrift.table.TableColumnType;
 import com.facebook.tracery.thrift.table.Unit;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ColumnTest {
   @Test
   public void testRawTypeEncoding() {
-    Assert.assertTrue(Column.rawTypeEncodingMap.size() == RawType.values().length);
+    assertTrue(Column.rawTypeEncodingMap.size() == RawType.values().length);
   }
 
   @Test
   public void testUnitEncoding() {
-    Assert.assertTrue(Column.unitEncodingMap.size() == Unit.values().length);
+    assertTrue(Column.unitEncodingMap.size() == Unit.values().length);
     for (Unit unit : Unit.values()) {
       assertNotSqlType(Column.unitEncodingMap.get(unit));
     }
@@ -24,7 +28,7 @@ public class ColumnTest {
 
   @Test
   public void testCategoryEncoding() {
-    Assert.assertTrue(Column.categoryEncodingMap.size() == Category.values().length);
+    assertTrue(Column.categoryEncodingMap.size() == Category.values().length);
     for (Category category : Category.values()) {
       assertNotSqlType(Column.categoryEncodingMap.get(category));
     }
@@ -32,7 +36,7 @@ public class ColumnTest {
 
   @Test
   public void testStructureEncoding() {
-    Assert.assertTrue(Column.structureEncodingMap.size() == Structure.values().length);
+    assertTrue(Column.structureEncodingMap.size() == Structure.values().length);
     for (Structure structure : Structure.values()) {
       assertNotSqlType(Column.structureEncodingMap.get(structure));
     }
@@ -47,7 +51,7 @@ public class ColumnTest {
             TableColumnType origType = new TableColumnType(rawType, category, unit, structure);
             String encoding = Column.encodeType(origType);
             TableColumnType decodedType = Column.decodeType(encoding);
-            Assert.assertEquals(origType, decodedType);
+            assertEquals(origType, decodedType);
           }
         }
       }
@@ -59,14 +63,14 @@ public class ColumnTest {
    * column names to type affinities.
    */
   private void assertNotSqlType(String encoding) {
-    Assert.assertNotNull(encoding);
-    Assert.assertFalse(encoding.toUpperCase().contains("INT"));
-    Assert.assertFalse(encoding.toUpperCase().contains("CHAR"));
-    Assert.assertFalse(encoding.toUpperCase().contains("CLOB"));
-    Assert.assertFalse(encoding.toUpperCase().contains("TEXT_COLUMN_TYPE"));
-    Assert.assertFalse(encoding.toUpperCase().contains("BLOB"));
-    Assert.assertFalse(encoding.toUpperCase().contains("REAL"));
-    Assert.assertFalse(encoding.toUpperCase().contains("FLOA"));
-    Assert.assertFalse(encoding.toUpperCase().contains("DOUB"));
+    assertNotNull(encoding);
+    assertFalse(encoding.toUpperCase().contains("INT"));
+    assertFalse(encoding.toUpperCase().contains("CHAR"));
+    assertFalse(encoding.toUpperCase().contains("CLOB"));
+    assertFalse(encoding.toUpperCase().contains("TEXT_COLUMN_TYPE"));
+    assertFalse(encoding.toUpperCase().contains("BLOB"));
+    assertFalse(encoding.toUpperCase().contains("REAL"));
+    assertFalse(encoding.toUpperCase().contains("FLOA"));
+    assertFalse(encoding.toUpperCase().contains("DOUB"));
   }
 }

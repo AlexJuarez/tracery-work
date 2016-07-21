@@ -85,11 +85,8 @@ public class ClientCommand extends AbstractCommand {
         ), Aggregation.NONE);
 
     Query selectReads = new Query()
-        // SELECT
         .setResultSet(Arrays.asList(fileNameResultColumn, pageCountResultColumn))
-        // FROM
         .setSourceTables(Arrays.asList(diskPhysOpTableName))
-        // WHERE
         .setWhere(Expression.binaryExpression(
             new BinaryExpression(
                 Expression.valueExpression(
@@ -100,9 +97,7 @@ public class ClientCommand extends AbstractCommand {
                     new ValueExpression("'R'")
                 )
             )))
-        // ORDER BY
         .setOrderBy(Arrays.asList(orderByFileName))
-        // LIMIT
         .setLimit(5);
 
     QueryResult selectReadsResult = client.query(selectReads);

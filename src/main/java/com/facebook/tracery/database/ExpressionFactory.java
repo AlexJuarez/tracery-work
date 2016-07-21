@@ -12,7 +12,7 @@ import com.facebook.tracery.thrift.query.ValueExpression;
 /**
  * Helper methods for constructing Expression trees.
  */
-public class ExpressionUtil {
+public class ExpressionFactory {
   public static Expression createValueExpression(String value) {
     return Expression.valueExpression(new ValueExpression(value));
   }

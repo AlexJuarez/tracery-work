@@ -218,7 +218,7 @@ public class Database {
     List<ResultColumn> resultColumns = query.getResultSet();
     if (resultColumns != null && !resultColumns.isEmpty()) {
       for (ResultColumn resultColumn : resultColumns) {
-        String expression = parseExpressionTree(resultColumn.getExpression());
+        String expression = formatExpressionTree(resultColumn.getExpression());
 
         Aggregation aggregation = resultColumn.getAggregation();
         switch (aggregation) {
@@ -262,7 +262,7 @@ public class Database {
   private void applyQueryWhere(Query query, SelectQuery selectQuery) {
     Expression whereFilterExpression = query.getWhere();
     if (whereFilterExpression != null) {
-      String expression = parseExpressionTree(whereFilterExpression);
+      String expression = formatExpressionTree(whereFilterExpression);
       selectQuery.addCondition(new CustomCondition(expression));
     }
   }
@@ -280,7 +280,7 @@ public class Database {
   private void applyQueryHaving(Query query, SelectQuery selectQuery) {
     Expression havingFilterExpression = query.getHaving();
     if (havingFilterExpression != null) {
-      String expression = parseExpressionTree(havingFilterExpression);
+      String expression = formatExpressionTree(havingFilterExpression);
       selectQuery.addHaving(new CustomCondition(expression));
     }
   }
@@ -310,21 +310,21 @@ public class Database {
     }
   }
 
-  protected String parseExpressionTree(Expression expression) {
+  protected String formatExpressionTree(Expression expression) {
     String result;
 
     if (expression.isSetValueExpression()) {
       ValueExpression valueExpression = expression.getValueExpression();
-      result = parseValueExpression(valueExpression);
+      result = formatValueExpression(valueExpression);
     } else if (expression.isSetUnaryExpression()) {
       UnaryExpression unaryExpression = expression.getUnaryExpression();
-      result = parseUnaryExpresssion(unaryExpression);
+      result = formatUnaryExpresssion(unaryExpression);
     } else if (expression.isSetBinaryExpression()) {
       BinaryExpression binaryExpression = expression.getBinaryExpression();
-      result = parseBinaryExpression(binaryExpression);
+      result = formatBinaryExpression(binaryExpression);
     } else if (expression.isSetTrinaryExpression()) {
       TrinaryExpression trinaryExpression = expression.getTrinaryExpression();
-      result = parseTrinaryExpression(trinaryExpression);
+      result = formatTrinaryExpression(trinaryExpression);
     } else {
       throw new IllegalArgumentException("No expression set: " + expression);
     }
@@ -332,11 +332,11 @@ public class Database {
     return "(" + result.toString() + ")";
   }
 
-  private String parseValueExpression(ValueExpression valueExpression) {
+  private String formatValueExpression(ValueExpression valueExpression) {
     return valueExpression.getValue();
   }
 
-  private String parseUnaryExpresssion(UnaryExpression unaryExpression) {
+  private String formatUnaryExpresssion(UnaryExpression unaryExpression) {
     String sqlUnaryOp;
     UnaryOperation unaryOp = unaryExpression.getOperation();
     switch (unaryOp) {
@@ -349,11 +349,11 @@ public class Database {
       default:
         throw new UnsupportedOperationException("Unsupported unary operation: " + unaryOp);
     }
-    String operand = parseExpressionTree(unaryExpression.getOperand());
+    String operand = formatExpressionTree(unaryExpression.getOperand());
     return sqlUnaryOp + operand;
   }
 
-  private String parseBinaryExpression(BinaryExpression binaryExpression) {
+  private String formatBinaryExpression(BinaryExpression binaryExpression) {
     String sqlBinaryOp;
     BinaryOperation binaryOp = binaryExpression.getOperation();
     switch (binaryOp) {
@@ -378,18 +378,18 @@ public class Database {
       default:
         throw new UnsupportedOperationException("Unsupported binary operation: " + binaryOp);
     }
-    String leftOperand = parseExpressionTree(binaryExpression.getLeftOperand());
+    String leftOperand = formatExpressionTree(binaryExpression.getLeftOperand());
     StringBuilder result = new StringBuilder();
     result.append(leftOperand);
     result.append(" ");
     result.append(sqlBinaryOp);
     result.append(" ");
-    String rightOperand = parseExpressionTree(binaryExpression.getRightOperand());
+    String rightOperand = formatExpressionTree(binaryExpression.getRightOperand());
     result.append(rightOperand);
     return result.toString();
   }
 
-  private String parseTrinaryExpression(TrinaryExpression trinaryExpression) {
+  private String formatTrinaryExpression(TrinaryExpression trinaryExpression) {
     String sqlTrinaryOp;
     TrinaryOperation trinaryOp = trinaryExpression.getOperation();
     switch (trinaryOp) {
@@ -400,16 +400,16 @@ public class Database {
         throw new UnsupportedOperationException("Unsupported trinary operation: " + trinaryOp);
     }
 
-    String middleOperand = parseExpressionTree(trinaryExpression.getRightOperand0());
+    String middleOperand = formatExpressionTree(trinaryExpression.getRightOperand0());
     StringBuilder result = new StringBuilder();
     result.append(middleOperand);
     result.append(" ");
     result.append(sqlTrinaryOp);
     result.append(" ");
-    String leftOperand = parseExpressionTree(trinaryExpression.getLeftOperand());
+    String leftOperand = formatExpressionTree(trinaryExpression.getLeftOperand());
     result.append(leftOperand);
     result.append(" AND ");
-    String rightOperand = parseExpressionTree(trinaryExpression.getRightOperand1());
+    String rightOperand = formatExpressionTree(trinaryExpression.getRightOperand1());
     result.append(rightOperand);
     return result.toString();
   }
