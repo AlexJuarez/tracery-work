@@ -4,23 +4,24 @@ jdk:
   - oraclejdk8
 
 env:
-  - NODE_VERSION=6
+  global:
+    - NODE_VERSION=6
+    - THRIFT_VER=0.9.3
+    - THRIFT_MD5=88d667a8ae870d5adeca8cb7d6795442
 
 install:
   - nvm install $NODE_VERSION
   - npm install
+  - npm prune
 
 script:
   - nvm use $NODE_VERSION
   - npm test
-  - gradle check
+  - ${PWD}/gradlew check
 
 addons:
   apt:
     packages:
-      - libboost-dev
-      - libboost-test-dev
-      - libboost-program-options-dev
       - libevent-dev
       - automake
       - libtool
@@ -32,25 +33,17 @@ addons:
       - html2text
 
 before_install:
-  # Newer gradle for checkstyle (https://issues.gradle.org/browse/GRADLE-3314)
-  - export GRADLE_VER=2.14
-  - wget https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip
-  - unzip gradle-${GRADLE_VER}-bin.zip
-  - export GRADLE_HOME=${PWD}/gradle-${GRADLE_VER}
-  - export PATH=${GRADLE_HOME}/bin:${PATH}
-  # Build thrift compiler.
-  - export THRIFT_VER=0.9.3
-  - export THRIFT_HOME=${PWD}/thrift-${THRIFT_VER}
-  - wget http://www.apache.org/dist/thrift/${THRIFT_VER}/thrift-${THRIFT_VER}.tar.gz
-  ## Verify MD5 since HTTPS to www.apache.org doesn't work reliably.
-  - export THRIFT_MD5=88d667a8ae870d5adeca8cb7d6795442
-  - echo "MD5 (thrift-${THRIFT_VER}.tar.gz) = ${THRIFT_MD5}" > ${THRIFT_VER}.tar.gz.md5
-  - md5sum -c ${THRIFT_VER}.tar.gz.md5
-  - tar xfz thrift-${THRIFT_VER}.tar.gz
-  - mv thrift-${THRIFT_VER} thrift-${THRIFT_VER}-build
-  - pushd ./thrift-${THRIFT_VER}-build
-  - ./configure --prefix=${THRIFT_HOME} --disable-libs --disable-tests --disable-tutorial
-  - make -j`nproc --all` install
-  - popd
-  - rm -rf thrift-${THRIFT_VER}-build
-  - export PATH=${THRIFT_HOME}/bin:${PATH}
+  - ${PWD}/scripts/build_thrift.sh
+  - export PATH=${PWD}/thrift-${THRIFT_VER}/bin:${PATH}
+
+before_cache:
+  # https://docs.travis-ci.com/user/languages/java/#Caching
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches
+    - $HOME/.gradle/wrapper
+    - node_modules
+    - thrift-${THRIFT_VER}
