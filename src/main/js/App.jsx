@@ -38,7 +38,7 @@ function App(props: Props): React.Element<*> {
       }}
     >
       {renderContent(props)}
-      <DevTools />
+      {!window.devToolsExtension && <DevTools />}
     </div>
   );
 }
