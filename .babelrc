@@ -10,7 +10,10 @@
 
     // TODO: Remove these two when https://github.com/gaearon/react-hot-loader/issues/313 is fixed
     "transform-class-properties",
-    "transform-es2015-classes"
+    "transform-es2015-classes",
+
+    // Stage 3 proposal
+    "syntax-trailing-function-commas",
   ],
   "presets" : [
     "react"
