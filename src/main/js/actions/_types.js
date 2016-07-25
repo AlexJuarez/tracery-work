@@ -6,6 +6,9 @@ export const START_OPEN_TRACE_FLOW = 'START_OPEN_TRACE_FLOW';
 /** Starts the Heatmap Demo */
 export const START_HEATMAP_DEMO = 'START_HEATMAP_DEMO';
 
+/** Starts the Summary Table Demo */
+export const START_SUMMARY_TABLE_DEMO = 'START_SUMMARY_TABLE_DEMO';
+
 /** Requests some data from the traces table. */
 export const TRACES_TABLE_FETCH = 'TRACES_TABLE_FETCH';
 
