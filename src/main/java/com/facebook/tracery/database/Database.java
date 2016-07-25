@@ -2,6 +2,9 @@ package com.facebook.tracery.database;
 
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
+import com.facebook.tracery.thrift.table.RawType;
+import com.facebook.tracery.thrift.table.Structure;
+import com.facebook.tracery.thrift.table.TableColumnType;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
@@ -160,6 +163,7 @@ public class Database {
     logger.info("Select Query SQL: " + sql);
 
     List<String> resultColumnNames = new ArrayList<>();
+    List<TableColumnType> resultColumnTypes = new ArrayList<>();
     List<List<String>> resultRows = new ArrayList<>();
     try (Statement statement = createStatement();
          ResultSet resultSet = statement.executeQuery(sql)) {
@@ -171,6 +175,9 @@ public class Database {
       for (int columnIdx = 1; columnIdx <= numColumns; columnIdx++) {
         String columnName = resultSetMetaData.getColumnName(columnIdx);
         resultColumnNames.add(columnName);
+        String columnTypeName = resultSetMetaData.getColumnTypeName(columnIdx);
+        TableColumnType columnType = Column.decodeType(columnTypeName);
+        resultColumnTypes.add(columnType);
       }
 
       while (resultSet.next()) {
@@ -184,6 +191,7 @@ public class Database {
 
     QueryResult result = new QueryResult();
     result.setColumnNames(resultColumnNames);
+    result.setColumnTypes(resultColumnTypes);
     result.setRows(resultRows);
 
     return result;

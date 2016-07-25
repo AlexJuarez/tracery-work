@@ -15,6 +15,31 @@ public class Column {
   /*
    * Convenience definitions of common column types.
    */
+  public static final TableColumnType INTEGER_COLUMN_TYPE = new TableColumnType(
+      RawType.INT,
+      Category.OTHER,
+      Unit.NONE,
+      Structure.SCALAR
+  );
+  public static final TableColumnType FLOAT_COLUMN_TYPE = new TableColumnType(
+      RawType.FLOAT,
+      Category.OTHER,
+      Unit.NONE,
+      Structure.SCALAR
+  );
+  public static final TableColumnType TEXT_COLUMN_TYPE = new TableColumnType(
+      RawType.STRING,
+      Category.OTHER,
+      Unit.NONE,
+      Structure.SCALAR
+  );
+  public static final TableColumnType BINARY_COLUMN_TYPE = new TableColumnType(
+      RawType.BINARY,
+      Category.OTHER,
+      Unit.NONE,
+      Structure.SCALAR
+  );
+
   public static final TableColumnType INDEX_COLUMN_TYPE = new TableColumnType(
       RawType.INT,
       Category.ID,
@@ -30,12 +55,6 @@ public class Column {
       Category.QUANTITY,
       Unit.BYTES,
       Structure.SCALAR);
-  public static final TableColumnType TEXT_COLUMN_TYPE = new TableColumnType(
-      RawType.STRING,
-      Category.OTHER,
-      Unit.NONE,
-      Structure.SCALAR);
-
   public static final TableColumnType DURATION_COLUMN_TYPE = new TableColumnType(
       RawType.FLOAT,
       Category.QUANTITY,
@@ -134,32 +153,32 @@ public class Column {
   /* package */ static final BiMap<Unit, String> unitEncodingMap = HashBiMap.create();
 
   static {
-    unitEncodingMap.put(Unit.NONE, "none");
-    unitEncodingMap.put(Unit.PERCENT, "pcnt");
-    unitEncodingMap.put(Unit.BYTES, "bytes");
-    unitEncodingMap.put(Unit.SECONDS, "sec");
-    unitEncodingMap.put(Unit.MILLISECONDS, "ms");
-    unitEncodingMap.put(Unit.MICROSECONDS, "us");
-    unitEncodingMap.put(Unit.NANOSECONDS, "ns");
+    unitEncodingMap.put(Unit.NONE, "NONE");
+    unitEncodingMap.put(Unit.PERCENT, "PCNT");
+    unitEncodingMap.put(Unit.BYTES, "BYTES");
+    unitEncodingMap.put(Unit.SECONDS, "SEC");
+    unitEncodingMap.put(Unit.MILLISECONDS, "MS");
+    unitEncodingMap.put(Unit.MICROSECONDS, "US");
+    unitEncodingMap.put(Unit.NANOSECONDS, "NS");
   }
 
   /* package */ static final BiMap<Category, String> categoryEncodingMap = HashBiMap.create();
 
   static {
-    categoryEncodingMap.put(Category.OTHER, "misc");
-    categoryEncodingMap.put(Category.QUANTITY, "qnt");
-    categoryEncodingMap.put(Category.ID, "id");
-    categoryEncodingMap.put(Category.DURATION, "dur");
-    categoryEncodingMap.put(Category.TIMESTAMP, "time");
-    categoryEncodingMap.put(Category.PATH, "path");
-    categoryEncodingMap.put(Category.URL, "url");
+    categoryEncodingMap.put(Category.OTHER, "MISC");
+    categoryEncodingMap.put(Category.QUANTITY, "QNT");
+    categoryEncodingMap.put(Category.ID, "ID");
+    categoryEncodingMap.put(Category.DURATION, "DUR");
+    categoryEncodingMap.put(Category.TIMESTAMP, "TIME");
+    categoryEncodingMap.put(Category.PATH, "PATH");
+    categoryEncodingMap.put(Category.URL, "URL");
   }
 
   /* package */ static final BiMap<Structure, String> structureEncodingMap = HashBiMap.create();
 
   static {
-    structureEncodingMap.put(Structure.SCALAR, "val");
-    structureEncodingMap.put(Structure.ARRAY, "arr");
+    structureEncodingMap.put(Structure.SCALAR, "VAL");
+    structureEncodingMap.put(Structure.ARRAY, "ARR");
   }
 
   private static final String SEPARATOR = "_";
@@ -178,25 +197,39 @@ public class Column {
 
   public static TableColumnType decodeType(String typeString) {
     String[] typeElements = typeString.split(SEPARATOR);
-    if (typeElements.length != 4) {
+    if (typeElements.length == 1) {
+      // Mathematical operations (except concatenation operator ||) apply NUMERIC affinity
+      // to all operands prior to their evaluation.
+      // Casting into NUMERIC first does a forced conversion into REAL but then further converts
+      // the result into INTEGER if and only if the conversion from REAL to INTEGER is lossless
+      // and reversible.
+      if (typeString.equalsIgnoreCase("INTEGER")) {
+        return INTEGER_COLUMN_TYPE;
+      } else if (typeString.equalsIgnoreCase("REAL")) {
+        return FLOAT_COLUMN_TYPE;
+      } else {
+        throw new IllegalArgumentException("Unexpected column type: '" + typeString + "'");
+      }
+    } else if (typeElements.length == 4) {
+      RawType rawType = rawTypeEncodingMap.inverse().get(typeElements[0]);
+      if (rawType == null) {
+        throw new IllegalArgumentException("Unknown raw type encoding: '" + typeString + "'");
+      }
+      Category category = categoryEncodingMap.inverse().get(typeElements[1]);
+      if (category == null) {
+        throw new IllegalArgumentException("Unknown category encoding: '" + typeString + "'");
+      }
+      Unit unit = unitEncodingMap.inverse().get(typeElements[2]);
+      if (unit == null) {
+        throw new IllegalArgumentException("Unknown unit encoding: '" + typeString + "'");
+      }
+      Structure structure = structureEncodingMap.inverse().get(typeElements[3]);
+      if (structure == null) {
+        throw new IllegalArgumentException("Unknown structure encoding: '" + typeString + "'");
+      }
+      return new TableColumnType(rawType, category, unit, structure);
+    } else {
       throw new IllegalArgumentException("Invalid number of type elements: '" + typeString + "'");
     }
-    RawType rawType = rawTypeEncodingMap.inverse().get(typeElements[0]);
-    if (rawType == null) {
-      throw new IllegalArgumentException("Unknown raw type encoding: '" + typeString + "'");
-    }
-    Category category = categoryEncodingMap.inverse().get(typeElements[1]);
-    if (category == null) {
-      throw new IllegalArgumentException("Unknown category encoding: '" + typeString + "'");
-    }
-    Unit unit = unitEncodingMap.inverse().get(typeElements[2]);
-    if (unit == null) {
-      throw new IllegalArgumentException("Unknown unit encoding: '" + typeString + "'");
-    }
-    Structure structure = structureEncodingMap.inverse().get(typeElements[3]);
-    if (structure == null) {
-      throw new IllegalArgumentException("Unknown structure encoding: '" + typeString + "'");
-    }
-    return new TableColumnType(rawType, category, unit, structure);
   }
 }

@@ -1,3 +1,4 @@
+include "table.thrift"
 namespace java com.facebook.tracery.thrift.query
 
 enum UnaryOperation {
@@ -100,5 +101,6 @@ struct Query {
 
 struct QueryResult {
   1: required list<string> columnNames;
-  2: required list<list<string>> rows;
+  2: required list<table.TableColumnType> columnTypes;
+  3: required list<list<string>> rows;
 }

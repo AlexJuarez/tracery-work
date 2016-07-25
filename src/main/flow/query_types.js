@@ -7,6 +7,8 @@
 //
 // @flow
 
+import { TableColumnType } from 'table_types';
+
 declare module query_types {
   declare var UnaryOperation: {
     NEGATE: number;
@@ -111,8 +113,9 @@ declare module query_types {
 
   declare class QueryResult {
     columnNames: Array<string>;
+    columnTypes: Array<TableColumnType>;
     rows: Array<Array<string>>;
 
-    constructor(args?: { columnNames: Array<string>, rows: Array<Array<string>> }): void;
+    constructor(args?: { columnNames: Array<string>, columnTypes: Array<TableColumnType>, rows: Array<Array<string>> }): void;
   }
 }

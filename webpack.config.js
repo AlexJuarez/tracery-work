@@ -63,7 +63,7 @@ module.exports = {
                 'ResultColumn,' +
                 'Query,' +
                 'QueryResult!' +
-              'imports-loader?Thrift=thrift',
+              'imports-loader?Thrift=thrift,{TableColumnType}=table_types',
     },
     {
       test: /tracery_types\.js$/,
