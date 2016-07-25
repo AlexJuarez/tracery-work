@@ -14,7 +14,7 @@ export default function configureStore(preloadedState?: State): Store {
     preloadedState,
     compose(
       applyMiddleware(thunk, createLogger()),
-      DevTools.instrument()
+      window.devToolsExtension ? window.devToolsExtension() : DevTools.instrument()
     )
   );
 
