@@ -60,7 +60,7 @@ public class QueryTest {
 
   @Test
   public void testQuery() throws SQLException {
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
@@ -81,7 +81,7 @@ public class QueryTest {
         Aggregation.NONE);
     query.setResultSet(Arrays.asList(resultColumn));
 
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
@@ -100,7 +100,7 @@ public class QueryTest {
     query.setWhere(ExpressionFactory.createBinaryValueExpression(NAME_COLUMN_NAME, BinaryOperation
         .EQ, "'Fido'"));
 
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
@@ -118,7 +118,7 @@ public class QueryTest {
     Ordering orderByRowId = new Ordering("ROWID", true);
     query.setOrderBy(Arrays.asList(orderByAge, orderByName, orderByRowId));
 
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
@@ -149,7 +149,7 @@ public class QueryTest {
     Grouping groupByName = new Grouping(NAME_COLUMN_NAME);
     query.setGroupBy(Arrays.asList(groupByName));
 
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
@@ -166,7 +166,7 @@ public class QueryTest {
   public void testQueryLimit() throws SQLException {
     query.setLimit(2);
 
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
@@ -182,7 +182,7 @@ public class QueryTest {
     query.setOffset(2);
     query.setLimit(2);
 
-    QueryResult queryResult = db.doQuery(query);
+    QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
     List<List<String>> expected = Arrays.asList(
