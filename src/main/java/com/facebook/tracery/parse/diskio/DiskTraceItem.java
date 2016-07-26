@@ -3,7 +3,9 @@ package com.facebook.tracery.parse.diskio;
 import org.python.core.PyList;
 import org.python.core.PyObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DiskTraceItem {
   private final PyObject pyObj;
@@ -63,21 +65,25 @@ public class DiskTraceItem {
   /**
    * Return the list of pages.
    */
-  public Integer[] getPages() {
-    PyList pyPages = (PyList) pyObj.__getattr__("pages");
-    Integer[] pages = new Integer[pyPages.size()];
-    pyPages.toArray(pages);
-    return pages;
+  public List<Integer> getPages() {
+    List<Integer> result = new ArrayList<>();
+    PyList pyResult = (PyList) pyObj.__getattr__("pages");
+    for (Object obj : pyResult) {
+      result.add((Integer)obj);
+    }
+    return result;
   }
 
   /**
    * Return the list of sectors.
    */
-  public Integer[] getSectors() {
-    PyList pySectors = (PyList) pyObj.__getattr__("sectors");
-    Integer[] sectors = new Integer[pySectors.size()];
-    pySectors.toArray(sectors);
-    return sectors;
+  public List<Integer> getSectors() {
+    List<Integer> result = new ArrayList<>();
+    PyList pyResult = (PyList) pyObj.__getattr__("sectors");
+    for (Object obj : pyResult) {
+      result.add((Integer)obj);
+    }
+    return result;
   }
 
   @Override
@@ -92,8 +98,8 @@ public class DiskTraceItem {
         getCpu(),
         getFileName(),
         getPageCount(),
-        Arrays.toString(getPages()),
-        Arrays.toString(getSectors())
+        getPages(),
+        getSectors()
     );
   }
 }

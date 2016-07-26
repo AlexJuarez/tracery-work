@@ -2,13 +2,13 @@ package com.facebook.tracery.database.trace;
 
 import com.facebook.tracery.database.Column;
 import com.facebook.tracery.database.Database;
+import com.facebook.tracery.database.JsonCoder;
 import com.facebook.tracery.database.Table;
 import com.facebook.tracery.parse.diskio.DiskTraceItem;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 /**
  * Store for disk I/O trace data.
@@ -35,7 +35,6 @@ public class DiskPhysOpTable extends Table {
   private Column columnPageCount;
   private Column columnPages;
   private Column columnSectors;
-
 
   public DiskPhysOpTable(Database db) throws SQLException {
     super(db);
@@ -113,10 +112,10 @@ public class DiskPhysOpTable extends Table {
             .addColumn(columnCpu.getDbColumn(), item.getCpu())
             .addColumn(columnFileName.getDbColumn(), item.getFileName())
             .addColumn(columnPageCount.getDbColumn(), item.getPageCount())
-            // FIXME: array encoding
-            .addColumn(columnPages.getDbColumn(), Arrays.toString(item.getPages()))
-            // FIXME: array encoding
-            .addColumn(columnSectors.getDbColumn(), Arrays.toString(item.getSectors()))
+            .addColumn(columnPages.getDbColumn(),
+                JsonCoder.getInstance().encodeList(item.getPages()))
+            .addColumn(columnSectors.getDbColumn(),
+                JsonCoder.getInstance().encodeList(item.getSectors()))
             .validate().toString();
     statement.addBatch(insertQuery);
   }
