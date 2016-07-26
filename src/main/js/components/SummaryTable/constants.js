@@ -9,7 +9,9 @@ import { List, Map } from 'immutable';
 export type Column = { title: string, order: number };
 export type ColumnWidths = List<number>;
 export type Headers = List<Column>;
-export type OnResize = (widths: Array<number>, rowHeight: number, maxRows: number) => void;
+export type OnResize = (
+  widths: Array<number>, rowHeight: number, maxRows: number, tableBodyHeight: number,
+) => void;
 export type Rows = Map<string, List<*>>;
 
 export const INITIAL_ROW_MAX = 50;

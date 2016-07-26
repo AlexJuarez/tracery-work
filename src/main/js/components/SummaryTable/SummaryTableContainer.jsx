@@ -85,14 +85,14 @@ export default class SummaryTableContainer extends Component {
   _renderHeaders(): Array<React.Element<*>> {
     return this.props.columnWidths.valueSeq().toArray()
       .map((width: number, i: number): React.Element<*> => (
-        <th key={i} width={`${width}px`} />
+        <th key={i} style={{ padding: 0, width: `${width}px` }} />
       ));
   }
 
   render(): ?React.Element<*> {
     return (
       <table
-        className="summary-table-chunk"
+        className="summary-table"
       >
         <thead>
           <tr>

@@ -36,7 +36,10 @@ type Props = {
    */
   currentRow?: number,
   headers: Headers,
-  height?: number | string,
+  /**
+   * height in pixels
+   */
+  height: number,
   /**
    * rows represents the currently loaded rows in a sparse map
    * with Map<rowNumber, row data>
@@ -46,7 +49,10 @@ type Props = {
    * totalRows is the total number of rows that is expected.
    */
   totalRows: number,
-  width?: number | string,
+  /**
+   * width in pixels
+   */
+  width: number,
 
   // Functions for updating
   onScrollStateUpdate?: (scrollState: ScrollState, viewSizeInRows: number) => void,
@@ -58,7 +64,8 @@ type State = {
   viewSizeInRows: number,
   scroll: ScrollState,
   columnWidths: ColumnWidths,
-}
+  tableBodyHeight: number,
+};
 
 export default class SummaryTable extends Component {
   constructor(props: Props, context: Object) {
@@ -88,7 +95,16 @@ export default class SummaryTable extends Component {
       'The total number of rows must be positive'
     );
 
+    if (props.width != null) {
+      invariant(props.width >= 0, 'Width must be greater than 0');
+    }
+
+    if (props.height != null) {
+      invariant(props.height >= 0, 'Height must be greater than 0');
+    }
+
     this.state = {
+      tableBodyHeight: 0,
       rowHeight: ROW_INITIAL_HEIGHT,
       viewSizeInRows: INITIAL_ROW_MAX,
       scroll: new ScrollState(initialScrollState),
@@ -121,11 +137,17 @@ export default class SummaryTable extends Component {
 
   _ticking: boolean;
 
-  _onResize(widths: Array<number>, rowHeight: number, viewSizeInRows: number) {
+  _onResize(
+    widths: Array<number>,
+    rowHeight: number,
+    viewSizeInRows: number,
+    tableBodyHeight: number,
+  ) {
     this.setState({
       columnWidths: new List(widths),
       rowHeight,
       viewSizeInRows,
+      tableBodyHeight,
     });
   }
 
@@ -180,7 +202,7 @@ export default class SummaryTable extends Component {
 
         return (
           <div
-            className="summary-table-header-cell"
+            className="summary-table-cell"
             style={style}
             key={header.title}
           >
@@ -205,6 +227,7 @@ export default class SummaryTable extends Component {
       <div
         onScroll={(event: *): void => this._handleScroll(event)}
         className="summary-table-body"
+        style={{ height: `${this.state.tableBodyHeight}px` }}
       >
         <SummaryTableContainer
           columnWidths={this.state.columnWidths}
@@ -229,8 +252,13 @@ export default class SummaryTable extends Component {
         columns={this._getOrderedColumns()}
         width={this.props.width}
         height={this.props.height}
-        onResize={(widths: Array<number>, rowHeight: number, viewSizeInRows: number) => {
-          this._onResize(widths, rowHeight, viewSizeInRows);
+        onResize={(
+          widths: Array<number>,
+          rowHeight: number,
+          viewSizeInRows: number,
+          tableBodyHeight: number
+        ) => {
+          this._onResize(widths, rowHeight, viewSizeInRows, tableBodyHeight);
         }}
       />
     );
@@ -238,7 +266,7 @@ export default class SummaryTable extends Component {
 
   render(): React.Element<*> {
     return (
-      <div className="summary-table-container">
+      <div style={{ width: `${this.props.width}px` }} className="summary-table-container">
         {this._renderHeaders()}
         {this._renderSummaryTable()}
         {this._renderSummaryTableSizing()}

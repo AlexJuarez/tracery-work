@@ -20,11 +20,15 @@ import type { Column, OnResize, Rows, Headers } from './constants';
 type Props = {
   columns: Headers,
   rows: Rows,
-  height: ?(number | string),
-  width: ?(number | string),
+  height: number,
+  width: number,
 
   // Event callbacks
   onResize: OnResize,
+};
+
+type State = {
+  headerHeight: number,
 };
 
 function renderRow(r: List<*>, rowNumber: number): React.Element<*> {
@@ -42,6 +46,10 @@ export default class SummaryTableSizing extends Component {
   constructor(props: Props, context: Object) {
     super(props, context);
 
+    this.state = {
+      headerHeight: 0,
+    };
+
     this._ticking = false;
     this._handleResizing = () => {
       if (!this._ticking) {
@@ -54,12 +62,13 @@ export default class SummaryTableSizing extends Component {
   }
 
   props: Props;
+  state: State;
 
   componentDidMount() {
     this._handleResizing();
   }
 
-  shouldComponentUpdate(nextProps: Props): boolean {
+  shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     if (this.props.rows.size === 0 && nextProps.rows.size !== 0) {
       return true;
     }
@@ -69,6 +78,10 @@ export default class SummaryTableSizing extends Component {
     }
 
     if (this.props.width !== nextProps.width) {
+      return true;
+    }
+
+    if (this.state.headerHeight !== nextState.headerHeight) {
       return true;
     }
 
@@ -86,7 +99,7 @@ export default class SummaryTableSizing extends Component {
 
   _renderColumns(): Array<React.Element<*>> {
     return this.props.columns.toArray().map((c: Column): React.Element<*> => (
-      <th style={{ minWidth: '3ex' }} key={c.title}>
+      <th className="summary-table-cell" style={{ minWidth: '3ex' }} key={c.title}>
         {c.title}
       </th>
     ));
@@ -107,10 +120,27 @@ export default class SummaryTableSizing extends Component {
     if (firstRow != null) {
       const rowHeight = firstRow.clientHeight;
       const maxRows = Math.ceil(this._container.clientHeight / rowHeight);
-      this.props.onResize(widths, rowHeight, maxRows);
+      this.props.onResize(
+        widths,
+        rowHeight,
+        maxRows,
+        (this.props.height - this.state.headerHeight)
+      );
     }
 
     this._ticking = false;
+  }
+
+  _renderBody(): ?React.Element<*> {
+    if (this.state.headerHeight === 0) {
+      return null;
+    }
+
+    return (
+      <tbody ref={(r: HTMLElement) => { this._rows = r; }}>
+        {this._renderRows()}
+      </tbody>
+    );
   }
 
   render(): React.Element<*> {
@@ -120,17 +150,21 @@ export default class SummaryTableSizing extends Component {
         className="summary-table-sizing"
       >
         <table
-          className="summary-table-chunk"
+          className="summary-table"
           style={{ visibility: 'hidden' }}
         >
-          <thead>
-            <tr>
+          <thead
+            ref={(e: HTMLElement) => {
+              if (e != null) {
+                this.setState({ headerHeight: e.clientHeight });
+              }
+            }}
+          >
+            <tr className="summary-table-header">
               {this._renderColumns()}
             </tr>
           </thead>
-          <tbody ref={(r: HTMLElement) => { this._rows = r; }}>
-            {this._renderRows()}
-          </tbody>
+          {this._renderBody()}
         </table>
       </div>
     );
