@@ -1,5 +1,8 @@
 package com.facebook.tracery.database;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import com.facebook.tracery.thrift.query.Aggregation;
 import com.facebook.tracery.thrift.query.BinaryOperation;
 import com.facebook.tracery.thrift.query.Grouping;
@@ -10,9 +13,6 @@ import com.facebook.tracery.thrift.query.ResultColumn;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.sql.SQLException;
 import java.sql.Statement;

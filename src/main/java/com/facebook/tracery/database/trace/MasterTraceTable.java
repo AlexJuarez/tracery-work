@@ -2,6 +2,7 @@ package com.facebook.tracery.database.trace;
 
 import com.facebook.tracery.database.Column;
 import com.facebook.tracery.database.Database;
+import com.facebook.tracery.database.JsonCoder;
 import com.facebook.tracery.database.Table;
 import com.facebook.tracery.thrift.TraceInfo;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
@@ -12,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -95,7 +95,8 @@ public class MasterTraceTable extends Table {
             .addColumn(columnBeginTime.getDbColumn(), beginTime)
             .addColumn(columnEndTime.getDbColumn(), endTime)
             .addColumn(columnDescription.getDbColumn(), description)
-            .addColumn(columnTraceTableNames.getDbColumn(), encodeTableNames(tableNames))
+            .addColumn(columnTraceTableNames.getDbColumn(),
+                JsonCoder.getInstance().encodeList(tableNames))
             .validate().toString();
     Statement statement = getDatabase().createStatement();
     statement.executeUpdate(sql);
@@ -134,7 +135,7 @@ public class MasterTraceTable extends Table {
         long beginTime = resultSet.getLong(2);
         long endTime = resultSet.getLong(3);
         String description = resultSet.getString(4);
-        List<String> traceTableNames = decodeTableNames(resultSet.getString(5));
+        List<String> traceTableNames = JsonCoder.getInstance().decodeList(resultSet.getString(5));
 
         traceInfo.setTraceId(Integer.toString(traceIndex));
         traceInfo.setTraceUrl(traceUrl);
@@ -148,17 +149,6 @@ public class MasterTraceTable extends Table {
     }
 
     return result;
-  }
-
-  private String encodeTableNames(List<String> tableNames) {
-    String result = tableNames.toString();
-    // String off leading '[' and trailing ']'.
-    result = result.substring(1, result.length() - 1);
-    return result;
-  }
-
-  private List<String> decodeTableNames(String encodedTableNames) {
-    return Arrays.asList(encodedTableNames.split(", "));
   }
 }
 
