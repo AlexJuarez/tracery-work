@@ -112,6 +112,25 @@ public class QueryTest {
   }
 
   @Test
+  public void testQueryResultColumnAlias() throws SQLException {
+    ResultColumn resultColumn = new ResultColumn(
+        ExpressionFactory.createValueExpression(AGE_COLUMN_NAME),
+        Aggregation.NONE);
+    String alias = "Hack";
+    resultColumn.setResultAlias(alias);
+    query.setResultSet(Arrays.asList(resultColumn));
+
+    QueryResult queryResult = db.doSelectQuery(query);
+    assertNotNull(queryResult);
+
+    List<String> expectedColumnNames = Arrays.asList(
+        alias
+    );
+    List<String> actualColumnNames = queryResult.getColumnNames();
+    assertEquals(expectedColumnNames, actualColumnNames);
+  }
+
+  @Test
   public void testQueryWhere() throws SQLException {
     query.setWhere(ExpressionFactory.createBinaryValueExpression(NAME_COLUMN_NAME, BinaryOperation
         .EQ, "'Fido'"));

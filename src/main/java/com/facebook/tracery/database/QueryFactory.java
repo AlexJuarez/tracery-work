@@ -68,7 +68,7 @@ public class QueryFactory {
         }
 
         String alias = resultColumn.getResultAlias();
-        if (alias != null && alias.isEmpty()) {
+        if (alias != null && !alias.isEmpty()) {
           expression += " AS " + alias;
         }
 
