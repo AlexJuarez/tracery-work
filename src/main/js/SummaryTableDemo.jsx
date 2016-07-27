@@ -8,8 +8,6 @@ import React, { Component } from 'react';
 import { SummaryTable } from './components/SummaryTable';
 import { Map, List } from 'immutable';
 
-import type { Column } from './components/SummaryTable';
-
 type State = {
   height: number,
   width: number,
@@ -17,7 +15,7 @@ type State = {
 
 const TOTAL_ROWS = 1000;
 
-const headers = new List([
+const headers = [
   '#',
   'timestamp',
   'type',
@@ -27,10 +25,7 @@ const headers = new List([
   'file',
   'page-count',
   'duration',
-].map((title: string, order: number): Column => ({
-  title,
-  order,
-})));
+];
 
 function createRows(): {[key: string]: *} {
   const rows = {};

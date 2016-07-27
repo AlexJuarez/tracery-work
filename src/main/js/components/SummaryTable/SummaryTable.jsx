@@ -10,10 +10,12 @@ import invariant from 'invariant';
 import shallowCompare from 'react-addons-shallow-compare';
 
 import { List } from 'immutable';
+import { Header } from '.';
 
 import ScrollState from './records/ScrollState';
 import SummaryTableContainer from './SummaryTableContainer';
 import TableSizing from './SummaryTableSizing';
+import TableHeader from './SummaryTableHeader';
 
 import {
   INITIAL_ROW_MAX,
@@ -22,8 +24,6 @@ import {
 } from './constants';
 
 import type {
-  Column,
-  ColumnWidths,
   Headers,
   Rows,
 } from './constants';
@@ -35,7 +35,7 @@ type Props = {
    * Optional the current row to start at.
    */
   currentRow?: number,
-  headers: Headers,
+  headers: Array<string>,
   /**
    * height in pixels
    */
@@ -60,11 +60,11 @@ type Props = {
 };
 
 type State = {
+  headers: Headers,
   rowHeight: number,
-  viewSizeInRows: number,
   scroll: ScrollState,
-  columnWidths: ColumnWidths,
   tableBodyHeight: number,
+  viewSizeInRows: number,
 };
 
 export default class SummaryTable extends Component {
@@ -104,11 +104,16 @@ export default class SummaryTable extends Component {
     }
 
     this.state = {
+      headers: new List(props.headers.map((title: string, order: number): Header => (
+        new Header({
+          title,
+          order,
+        })
+      ))),
       tableBodyHeight: 0,
       rowHeight: ROW_INITIAL_HEIGHT,
       viewSizeInRows: INITIAL_ROW_MAX,
       scroll: new ScrollState(initialScrollState),
-      columnWidths: new List(),
     };
 
     this._ticking = false;
@@ -137,25 +142,24 @@ export default class SummaryTable extends Component {
 
   _ticking: boolean;
 
+  _onHeaderUpdate(headers: Headers) {
+    this.setState({
+      headers: headers.sort((a: Header, b: Header): number => (
+        a.order - b.order
+      )),
+    });
+  }
+
   _onResize(
-    widths: Array<number>,
     rowHeight: number,
     viewSizeInRows: number,
     tableBodyHeight: number,
   ) {
     this.setState({
-      columnWidths: new List(widths),
       rowHeight,
       viewSizeInRows,
       tableBodyHeight,
     });
-  }
-
-  _getOrderedColumns(): Headers {
-    return this.props.headers
-      .sort((a: Column, b: Column): number => (
-        a.order - b.order
-      ));
   }
 
   _handleScroll(event: *) {
@@ -186,30 +190,56 @@ export default class SummaryTable extends Component {
     return this.props.rows != null && this.props.rows.size !== 0;
   }
 
+  _onHeaderResize(index: number, delta: number) {
+    const { headers } = this.state;
+    const firstHeader = headers.get(index);
+    const secondHeader = headers.get(index + 1);
+
+    let firstHeaderWidth = firstHeader.width - delta;
+    let secondHeaderWidth = secondHeader.width + delta;
+
+    /**
+     * If the headerWidth is less than the minWidth for that column
+     * then the headerWidth should be equal to the minWidth
+     * and the other header should be equal to its original width + the change
+     * in width in the first.
+     */
+    if (firstHeaderWidth < firstHeader.minWidth) {
+      firstHeaderWidth = firstHeader.minWidth;
+      secondHeaderWidth = secondHeader.width + (firstHeader.width - firstHeaderWidth);
+    } else if (secondHeaderWidth < secondHeader.minWidth) {
+      secondHeaderWidth = secondHeader.minWidth;
+      firstHeaderWidth = firstHeader.width + (secondHeader.width - secondHeaderWidth);
+    }
+
+    const updated = headers.set(index,
+      firstHeader
+        .set('width', firstHeaderWidth)
+        .set('customWidth', true)
+    )
+      .set(index + 1,
+        secondHeader
+          .set('width', secondHeaderWidth)
+          .set('customWidth', true)
+      );
+
+    this.setState({ headers: updated });
+  }
+
   _renderHeaders(): ?React.Element<*> {
     if (!this._hasRows()) {
       return null;
     }
 
-    const { columnWidths } = this.state;
-
-    const headers = this._getOrderedColumns()
-      .map((header: Column, i: number): React.Element<*> => {
-        let style;
-        if (columnWidths.get(i) != null) {
-          style = { width: `${columnWidths.get(i)}px` };
-        }
-
-        return (
-          <div
-            className="summary-table-cell"
-            style={style}
-            key={header.title}
-          >
-            {header.title}
-          </div>
-        );
-      });
+    const headers = this.state.headers
+      .map((header: Header, index: number): React.Element<*> => (
+        <TableHeader
+          onResize={(delta: number) => { this._onHeaderResize(index, delta); }}
+          header={header}
+          headers={this.state.headers}
+          key={header.title}
+        />
+      ));
 
     return (
       <div className="summary-table-header">
@@ -230,7 +260,7 @@ export default class SummaryTable extends Component {
         style={{ height: `${this.state.tableBodyHeight}px` }}
       >
         <SummaryTableContainer
-          columnWidths={this.state.columnWidths}
+          headers={this.state.headers}
           viewSizeInRows={this.state.viewSizeInRows}
           rowHeight={this.state.rowHeight}
           rows={this.props.rows}
@@ -249,16 +279,18 @@ export default class SummaryTable extends Component {
     return (
       <TableSizing
         rows={this.props.rows}
-        columns={this._getOrderedColumns()}
+        headers={this.state.headers}
         width={this.props.width}
         height={this.props.height}
         onResize={(
-          widths: Array<number>,
           rowHeight: number,
           viewSizeInRows: number,
           tableBodyHeight: number
         ) => {
-          this._onResize(widths, rowHeight, viewSizeInRows, tableBodyHeight);
+          this._onResize(rowHeight, viewSizeInRows, tableBodyHeight);
+        }}
+        onHeaderUpdate={(headers: Headers) => {
+          this._onHeaderUpdate(headers);
         }}
       />
     );

@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import throttle from 'lodash.throttle';
 
 import { List } from 'immutable';
+import { Header } from '.';
 
 import forEachChild from './utils/forEachChild';
 
@@ -15,16 +16,17 @@ import SummaryTableRow from './SummaryTableRow';
 
 import { ON_RESIZE_ROW_COUNT, RESIZE_REFRESH_RATE } from './constants';
 
-import type { Column, OnResize, Rows, Headers } from './constants';
+import type { OnResize, OnHeaderUpdate, Rows, Headers } from './constants';
 
 type Props = {
-  columns: Headers,
+  headers: Headers,
   rows: Rows,
   height: number,
   width: number,
 
   // Event callbacks
   onResize: OnResize,
+  onHeaderUpdate: OnHeaderUpdate,
 };
 
 type State = {
@@ -85,7 +87,7 @@ export default class SummaryTableSizing extends Component {
       return true;
     }
 
-    return this.props.columns !== nextProps.columns;
+    return this.props.headers !== nextProps.headers;
   }
 
   componentDidUpdate() {
@@ -98,16 +100,49 @@ export default class SummaryTableSizing extends Component {
   _container: HTMLElement;
 
   _renderColumns(): Array<React.Element<*>> {
-    return this.props.columns.toArray().map((c: Column): React.Element<*> => (
-      <th className="summary-table-cell" style={{ minWidth: '3ex' }} key={c.title}>
-        {c.title}
-      </th>
-    ));
+    return this.props.headers.toArray().map((header: Header): React.Element<*> => {
+      const style = {};
+
+      style.minWidth = `${header.minWidth}px`;
+      if (header.customWidth) {
+        style.width = `${header.width}px`;
+      }
+
+      return (
+        <th className="summary-table-cell" style={style} key={header.title}>
+          {header.title}
+        </th>
+      );
+    });
   }
 
   _renderRows(): Array<React.Element<*>> {
     return this.props.rows.valueSeq().take(ON_RESIZE_ROW_COUNT).toArray()
       .map(renderRow);
+  }
+
+  _headersReady(): boolean {
+    return this.state.headerHeight !== 0;
+  }
+
+  _handleHeaderWidths(headers: HTMLElement) {
+    if (headers == null || this._headersReady()) {
+      return;
+    }
+
+    const widths = [];
+
+    forEachChild(headers.firstElementChild, (cell: HTMLElement) => {
+      widths.push(cell.clientWidth);
+    });
+
+    this.props.onHeaderUpdate(
+      this.props.headers.map((header: Header, i: number): Header => (
+        header.set('minWidth', widths[i])
+      ))
+    );
+
+    this.setState({ headerHeight: headers.clientHeight });
   }
 
   _handleColumnWidth() {
@@ -120,8 +155,12 @@ export default class SummaryTableSizing extends Component {
     if (firstRow != null) {
       const rowHeight = firstRow.clientHeight;
       const maxRows = Math.ceil(this._container.clientHeight / rowHeight);
+      this.props.onHeaderUpdate(
+        this.props.headers.map((header: Header, i: number): Header => (
+          header.set('width', widths[i])
+        ))
+      );
       this.props.onResize(
-        widths,
         rowHeight,
         maxRows,
         (this.props.height - this.state.headerHeight)
@@ -132,7 +171,7 @@ export default class SummaryTableSizing extends Component {
   }
 
   _renderBody(): ?React.Element<*> {
-    if (this.state.headerHeight === 0) {
+    if (!this._headersReady()) {
       return null;
     }
 
@@ -144,20 +183,21 @@ export default class SummaryTableSizing extends Component {
   }
 
   render(): React.Element<*> {
+    const style = {};
+
+    if (!this._headersReady()) {
+      style.width = 'initial';
+    }
+
     return (
       <div
         ref={(c: HTMLElement) => { this._container = c; }}
         className="summary-table-sizing"
       >
-        <table
-          className="summary-table"
-          style={{ visibility: 'hidden' }}
-        >
+        <table className="summary-table" style={style}>
           <thead
             ref={(e: HTMLElement) => {
-              if (e != null) {
-                this.setState({ headerHeight: e.clientHeight });
-              }
+              this._handleHeaderWidths(e);
             }}
           >
             <tr className="summary-table-header">
