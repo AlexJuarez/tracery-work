@@ -24,7 +24,7 @@ public class JsonCoder {
   }
 
   public <T> List<T> decodeList(String json) {
-    Type collectionType = new TypeToken<ArrayList<T>>(){}.getType();
+    Type collectionType = new TypeToken<ArrayList<T>>() {}.getType();
     return gson.fromJson(json, collectionType);
   }
 }

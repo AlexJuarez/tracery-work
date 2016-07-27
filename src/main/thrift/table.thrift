@@ -3,6 +3,7 @@ include "type.thrift"
 namespace java com.facebook.tracery.thrift.table
 
 enum RawType {
+  NULL,
   BOOL,
   INT,
   FLOAT,

@@ -12,92 +12,6 @@ import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
 
 public class Column {
-  /*
-   * Convenience definitions of common column types.
-   */
-  public static final TableColumnType INTEGER_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.OTHER,
-      Unit.NONE,
-      Structure.SCALAR
-  );
-  public static final TableColumnType FLOAT_COLUMN_TYPE = new TableColumnType(
-      RawType.FLOAT,
-      Category.OTHER,
-      Unit.NONE,
-      Structure.SCALAR
-  );
-  public static final TableColumnType TEXT_COLUMN_TYPE = new TableColumnType(
-      RawType.STRING,
-      Category.OTHER,
-      Unit.NONE,
-      Structure.SCALAR
-  );
-  public static final TableColumnType BINARY_COLUMN_TYPE = new TableColumnType(
-      RawType.BINARY,
-      Category.OTHER,
-      Unit.NONE,
-      Structure.SCALAR
-  );
-
-  public static final TableColumnType INDEX_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.ID,
-      Unit.NONE,
-      Structure.SCALAR);
-  public static final TableColumnType COUNT_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.QUANTITY,
-      Unit.NONE,
-      Structure.SCALAR);
-  public static final TableColumnType BYTES_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.QUANTITY,
-      Unit.BYTES,
-      Structure.SCALAR);
-  public static final TableColumnType DURATION_COLUMN_TYPE = new TableColumnType(
-      RawType.FLOAT,
-      Category.QUANTITY,
-      Unit.SECONDS,
-      Structure.SCALAR);
-  public static final TableColumnType TIMESTAMP_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.TIMESTAMP,
-      Unit.MICROSECONDS,
-      Structure.SCALAR);
-
-  public static final TableColumnType NAME_COLUMN_TYPE = new TableColumnType(
-      RawType.STRING,
-      Category.ID,
-      Unit.NONE,
-      Structure.SCALAR);
-  public static final TableColumnType NAME_ARRAY_COLUMN_TYPE = new TableColumnType(
-      RawType.STRING,
-      Category.ID,
-      Unit.NONE,
-      Structure.ARRAY);
-  public static final TableColumnType ID_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.ID,
-      Unit.NONE,
-      Structure.SCALAR);
-  public static final TableColumnType ID_ARRAY_COLUMN_TYPE = new TableColumnType(
-      RawType.INT,
-      Category.ID,
-      Unit.NONE,
-      Structure.ARRAY);
-
-  public static final TableColumnType PATH_COLUMN_TYPE = new TableColumnType(
-      RawType.STRING,
-      Category.PATH,
-      Unit.NONE,
-      Structure.SCALAR);
-  public static final TableColumnType URL_COLUMN_TYPE = new TableColumnType(
-      RawType.STRING,
-      Category.URL,
-      Unit.NONE,
-      Structure.SCALAR);
-
   private DbTable dbTable;
   private DbColumn dbColumn;
 
@@ -142,6 +56,7 @@ public class Column {
   /* package */ static final BiMap<RawType, String> rawTypeEncodingMap = HashBiMap.create();
 
   static {
+    rawTypeEncodingMap.put(RawType.NULL, "NULL");
     rawTypeEncodingMap.put(RawType.BOOL, "BOOL"); // numeric
     rawTypeEncodingMap.put(RawType.INT, "INT");
     rawTypeEncodingMap.put(RawType.FLOAT, "FLOAT");
@@ -203,12 +118,19 @@ public class Column {
       // Casting into NUMERIC first does a forced conversion into REAL but then further converts
       // the result into INTEGER if and only if the conversion from REAL to INTEGER is lossless
       // and reversible.
-      if (typeString.equalsIgnoreCase("INTEGER")) {
-        return INTEGER_COLUMN_TYPE;
-      } else if (typeString.equalsIgnoreCase("REAL")) {
-        return FLOAT_COLUMN_TYPE;
-      } else {
-        throw new IllegalArgumentException("Unexpected column type: '" + typeString + "'");
+      switch (typeString.toUpperCase()) {
+        case "NULL":
+          return ColumnType.NULL_COLUMN_TYPE;
+        case "INTEGER":
+          return ColumnType.INTEGER_COLUMN_TYPE;
+        case "REAL":
+          return ColumnType.FLOAT_COLUMN_TYPE;
+        case "TEXT":
+          return ColumnType.TEXT_COLUMN_TYPE;
+        case "BLOB":
+          return ColumnType.BINARY_COLUMN_TYPE;
+        default:
+          throw new IllegalArgumentException("Unexpected column type: '" + typeString + "'");
       }
     } else if (typeElements.length == 4) {
       RawType rawType = rawTypeEncodingMap.inverse().get(typeElements[0]);

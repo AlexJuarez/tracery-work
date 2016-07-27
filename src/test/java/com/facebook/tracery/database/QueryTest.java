@@ -18,13 +18,14 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class QueryTest {
   private static final String NAME_COLUMN_NAME = "name";
   private static final String AGE_COLUMN_NAME = "age";
-  private static final TableColumnType NAME_COLUMN_TYPE = Column.NAME_COLUMN_TYPE;
-  private static final TableColumnType AGE_COLUMN_TYPE = Column.COUNT_COLUMN_TYPE;
+  private static final TableColumnType NAME_COLUMN_TYPE = ColumnType.NAME_COLUMN_TYPE;
+  private static final TableColumnType AGE_COLUMN_TYPE = ColumnType.COUNT_COLUMN_TYPE;
   private static final String[] NAME_DATA = {"Fido", "Benji", "Oreo", "Bear", "Fido"};
   private static final Integer[] AGE_DATA = {3, 1, 8, 8, 2};
 
@@ -213,7 +214,44 @@ public class QueryTest {
     // NOTE: Mathematical operations like sum() cast operands to NUMERIC (INT / FLOAT) affinity.
     List<TableColumnType> expectedTypes = Arrays.asList(
         NAME_COLUMN_TYPE,
-        Column.INTEGER_COLUMN_TYPE
+        ColumnType.INTEGER_COLUMN_TYPE
+    );
+    List<TableColumnType> actualTypes = queryResult.getColumnTypes();
+    assertEquals(expectedTypes, actualTypes);
+  }
+
+  @Test
+  public void testQueryAggregationEmptyResult() throws SQLException {
+    ResultColumn ageResultColumn = new ResultColumn(
+        ExpressionFactory.createValueExpression(AGE_COLUMN_NAME),
+        Aggregation.NONE);
+    ResultColumn ageSumColumn = new ResultColumn(
+        ExpressionFactory.createValueExpression(AGE_COLUMN_NAME),
+        Aggregation.SUM);
+    query.setResultSet(Arrays.asList(ageResultColumn, ageSumColumn));
+
+    Ordering orderByAgeCount = new Ordering("count(" + AGE_COLUMN_NAME + ")", true);
+    Ordering orderByRowId = new Ordering("ROWID", true);
+    query.setOrderBy(Arrays.asList(orderByAgeCount, orderByRowId));
+
+    Grouping groupByName = new Grouping(AGE_COLUMN_NAME);
+    query.setGroupBy(Arrays.asList(groupByName));
+
+    // Add condition which will result in no match
+    query.setWhere(ExpressionFactory.createBinaryValueExpression(NAME_COLUMN_NAME, BinaryOperation
+        .EQ, "'Olive'")); // no match
+
+    QueryResult queryResult = db.doSelectQuery(query);
+    assertNotNull(queryResult);
+
+    List<List<String>> expectedValues = Collections.emptyList();
+    List<List<String>> actualValues = queryResult.getRows();
+    assertEquals(expectedValues, actualValues);
+
+    // Aggregation result columns have NULL type if there are no results.
+    List<TableColumnType> expectedTypes = Arrays.asList(
+        AGE_COLUMN_TYPE,
+        ColumnType.NULL_COLUMN_TYPE
     );
     List<TableColumnType> actualTypes = queryResult.getColumnTypes();
     assertEquals(expectedTypes, actualTypes);

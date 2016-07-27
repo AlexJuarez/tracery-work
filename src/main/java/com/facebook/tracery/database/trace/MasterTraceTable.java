@@ -1,6 +1,7 @@
 package com.facebook.tracery.database.trace;
 
 import com.facebook.tracery.database.Column;
+import com.facebook.tracery.database.ColumnType;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.database.JsonCoder;
 import com.facebook.tracery.database.Table;
@@ -67,11 +68,12 @@ public class MasterTraceTable extends Table {
     // Integer primary key implies UNIQUE and AUTOINCREMENT.
     columnTraceIndex.addPrimaryKeyConstraint("[Trace id primary key constraint]");
 
-    columnTraceUrl = addColumn(URL_COLUMN_NAME, Column.URL_COLUMN_TYPE);
-    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, Column.TEXT_COLUMN_TYPE);
-    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME, Column.NAME_ARRAY_COLUMN_TYPE);
+    columnTraceUrl = addColumn(URL_COLUMN_NAME, ColumnType.URL_COLUMN_TYPE);
+    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, ColumnType.TIMESTAMP_COLUMN_TYPE);
+    columnEndTime = addColumn(END_TIME_COLUMN_NAME, ColumnType.TIMESTAMP_COLUMN_TYPE);
+    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, ColumnType.TEXT_COLUMN_TYPE);
+    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME,
+        ColumnType.NAME_ARRAY_COLUMN_TYPE);
   }
 
   /**
