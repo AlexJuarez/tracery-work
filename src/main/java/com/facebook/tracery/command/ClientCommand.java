@@ -3,6 +3,7 @@ package com.facebook.tracery.command;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.facebook.tracery.database.ExpressionFactory;
 import com.facebook.tracery.database.Table;
 import com.facebook.tracery.database.trace.DiskPhysOpTable;
 import com.facebook.tracery.thrift.TraceInfo;
@@ -11,6 +12,7 @@ import com.facebook.tracery.thrift.query.Aggregation;
 import com.facebook.tracery.thrift.query.BinaryExpression;
 import com.facebook.tracery.thrift.query.BinaryOperation;
 import com.facebook.tracery.thrift.query.Expression;
+import com.facebook.tracery.thrift.query.Grouping;
 import com.facebook.tracery.thrift.query.Ordering;
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
@@ -73,39 +75,113 @@ public class ClientCommand extends AbstractCommand {
     System.out.println();
 
     // List the filenames and count for the first N reads
-    String diskPhysOpTableName = Table.getTableName(DiskPhysOpTable.class);
-    Ordering orderByFileName = new Ordering(DiskPhysOpTable.FILE_NAME_COLUMN_NAME, true);
-    ResultColumn fileNameResultColumn = new ResultColumn(
-        Expression.valueExpression(
-            new ValueExpression(DiskPhysOpTable.FILE_NAME_COLUMN_NAME)
-        ), Aggregation.NONE);
-    ResultColumn pageCountResultColumn = new ResultColumn(
-        Expression.valueExpression(
-            new ValueExpression(DiskPhysOpTable.PAGE_COUNT_COLUMN_NAME)
-        ), Aggregation.NONE);
+    {
+      String diskPhysOpTableName = Table.getTableName(DiskPhysOpTable.class);
+      Ordering orderByFileName = new Ordering(DiskPhysOpTable.FILE_NAME_COLUMN_NAME, true);
+      ResultColumn fileNameResultColumn = new ResultColumn(
+          Expression.valueExpression(
+              new ValueExpression(DiskPhysOpTable.FILE_NAME_COLUMN_NAME)
+          ), Aggregation.NONE);
+      ResultColumn pageCountResultColumn = new ResultColumn(
+          Expression.valueExpression(
+              new ValueExpression(DiskPhysOpTable.PAGE_COUNT_COLUMN_NAME)
+          ), Aggregation.NONE);
 
-    Query selectReads = new Query()
-        .setResultSet(Arrays.asList(fileNameResultColumn, pageCountResultColumn))
-        .setSourceTables(Arrays.asList(diskPhysOpTableName))
-        .setWhere(Expression.binaryExpression(
-            new BinaryExpression(
-                Expression.valueExpression(
-                    new ValueExpression(DiskPhysOpTable.FILE_OP_COLUMN_NAME)
-                ),
-                BinaryOperation.EQ,
-                Expression.valueExpression(
-                    new ValueExpression("'R'")
-                )
-            )))
-        .setOrderBy(Arrays.asList(orderByFileName))
-        .setLimit(5);
+      Query selectReads = new Query()
+          .setResultSet(Arrays.asList(fileNameResultColumn, pageCountResultColumn))
+          .setSourceTables(Arrays.asList(diskPhysOpTableName))
+          .setWhere(Expression.binaryExpression(
+              new BinaryExpression(
+                  Expression.valueExpression(
+                      new ValueExpression(DiskPhysOpTable.FILE_OP_COLUMN_NAME)
+                  ),
+                  BinaryOperation.EQ,
+                  Expression.valueExpression(
+                      new ValueExpression("'R'")
+                  )
+              )))
+          .setOrderBy(Arrays.asList(orderByFileName))
+          .setLimit(5);
 
-    QueryResult selectReadsResult = client.query(selectReads);
-    int rowNum = 1;
-    for (List<String> row : selectReadsResult.getRows()) {
-      System.out.printf("READ %-2d: %s%n", rowNum++, row.toString());
+      QueryResult selectReadsResult = client.query(selectReads);
+      int rowNum = 1;
+      for (List<String> row : selectReadsResult.getRows()) {
+        System.out.printf("READ %-2d: %s%n", rowNum++, row.toString());
+      }
+      System.out.println();
     }
-    System.out.println();
+
+    // List the read counts per page for each *.dex file
+    {
+      String diskPhysOpTableName = Table.getTableName(DiskPhysOpTable.class);
+      ResultColumn fileNameResultColumn = new ResultColumn(
+          Expression.valueExpression(new ValueExpression("file_name")),
+          Aggregation.NONE
+      );
+
+      ResultColumn binNameResultColumn = new ResultColumn(
+          Expression.valueExpression(new ValueExpression("atom")),
+          Aggregation.NONE
+      );
+      binNameResultColumn.setResultAlias("binName");
+
+      ResultColumn binCountResultColumn = new ResultColumn(
+          Expression.valueExpression(new ValueExpression("atom")),
+          Aggregation.COUNT
+      );
+      binCountResultColumn.setResultAlias("binCount");
+
+      Grouping groupByFileName = new Grouping(DiskPhysOpTable.FILE_NAME_COLUMN_NAME);
+      Grouping groupByFileOp = new Grouping(DiskPhysOpTable.FILE_OP_COLUMN_NAME);
+      Grouping groupByPage = new Grouping("atom");
+
+      Ordering orderByFileName = new Ordering(DiskPhysOpTable.FILE_NAME_COLUMN_NAME, true);
+      Ordering orderByFileOp = new Ordering(DiskPhysOpTable.FILE_OP_COLUMN_NAME, true);
+      Ordering orderByBinName = new Ordering(binNameResultColumn.getResultAlias(), true);
+
+      Expression isWriteOp = Expression.binaryExpression(
+          new BinaryExpression(
+              Expression.valueExpression(
+                  new ValueExpression(DiskPhysOpTable.FILE_OP_COLUMN_NAME)
+              ),
+              BinaryOperation.EQ,
+              Expression.valueExpression(
+                  new ValueExpression("'R'")
+              )
+          ));
+      Expression isDexFile = Expression.binaryExpression(
+          new BinaryExpression(
+              Expression.valueExpression(
+                  new ValueExpression(DiskPhysOpTable.FILE_NAME_COLUMN_NAME)
+              ),
+              BinaryOperation.GLOB,
+              Expression.valueExpression(
+                  new ValueExpression("'*.dex'")
+              )
+          ));
+
+      Query histogramQuery = new Query()
+          .setResultSet(Arrays.asList(fileNameResultColumn, binNameResultColumn,
+              binCountResultColumn))
+          .setSourceTables(Arrays.asList(
+              diskPhysOpTableName,
+              String.format("json_each(%s)", DiskPhysOpTable.PAGES_COLUMN_NAME)))
+          .setWhere(Expression.binaryExpression(
+              new BinaryExpression(isWriteOp, BinaryOperation.AND, isDexFile)))
+          .setGroupBy(Arrays.asList(groupByFileName, groupByFileOp, groupByPage))
+          .setOrderBy(Arrays.asList(orderByFileName, orderByFileOp, orderByBinName));
+
+      QueryResult histogramResult = client.query(histogramQuery);
+
+      for (List<String> row : histogramResult.getRows()) {
+        for (String cell : row) {
+          System.out.printf("%s\t", cell);
+        }
+        System.out.println();
+      }
+      System.out.println();
+    }
+
 
     transport.close();
   }

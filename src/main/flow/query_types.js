@@ -16,12 +16,28 @@ declare module query_types {
   }
 
   declare var BinaryOperation: {
+    CONCATENATE: number;
+    MULTIPLY: number;
+    DIVIDE: number;
+    MODULO: number;
+    ADD: number;
+    SUBTRACT: number;
+    SHIFT_LEFT: number;
+    SHIFT_RIGHT: number;
+    BITWISE_AND: number;
+    BITWISE_OR: number;
     LT: number;
     LE: number;
     GE: number;
     GT: number;
     EQ: number;
     NEQ: number;
+    IN: number;
+    LIKE: number;
+    GLOB: number;
+    REGEXP: number;
+    AND: number;
+    OR: number;
   }
 
   declare var TrinaryOperation: {

@@ -22,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public class QueryFactory {
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -46,6 +48,17 @@ public class QueryFactory {
     return selectQuery;
   }
 
+  /* package */ static Map<Aggregation, String> aggregationSqlMap =
+      new EnumMap<>(Aggregation.class);
+
+  static {
+    aggregationSqlMap.put(Aggregation.AVG, "avg");
+    aggregationSqlMap.put(Aggregation.MIN, "min");
+    aggregationSqlMap.put(Aggregation.MAX, "max");
+    aggregationSqlMap.put(Aggregation.SUM, "sum");
+    aggregationSqlMap.put(Aggregation.COUNT, "count");
+  }
+
   private void applyQuerySelect(Query query, SelectQuery selectQuery) {
     List<ResultColumn> resultColumns = query.getResultSet();
     if (resultColumns != null && !resultColumns.isEmpty()) {
@@ -53,18 +66,12 @@ public class QueryFactory {
         String expression = formatExpressionTree(resultColumn.getExpression());
 
         Aggregation aggregation = resultColumn.getAggregation();
-        switch (aggregation) {
-          case NONE:
-            break;
-          case AVG:
-          case MIN:
-          case MAX:
-          case SUM:
-          case COUNT:
-            expression = aggregation.name().toLowerCase() + "(" + expression + ")";
-            break;
-          default:
-            break;
+        if (aggregation != Aggregation.NONE) {
+          String aggregrationSql = aggregationSqlMap.get(aggregation);
+          if (aggregrationSql == null) {
+            throw new UnsupportedOperationException("Unsupported aggregation: " + aggregation);
+          }
+          expression = aggregation.name().toLowerCase() + "(" + expression + ")";
         }
 
         String alias = resultColumn.getResultAlias();
@@ -168,47 +175,58 @@ public class QueryFactory {
     return valueExpression.getValue();
   }
 
+  /* package */ static Map<UnaryOperation, String> unaryOpSqlMap =
+      new EnumMap<>(UnaryOperation.class);
+
+  static {
+    unaryOpSqlMap.put(UnaryOperation.NEGATE, "-");
+    unaryOpSqlMap.put(UnaryOperation.NOT, "NOT");
+  }
+
   private String formatUnaryExpresssion(UnaryExpression unaryExpression) {
-    String sqlUnaryOp;
     UnaryOperation unaryOp = unaryExpression.getOperation();
-    switch (unaryOp) {
-      case NEGATE:
-        sqlUnaryOp = "-";
-        break;
-      case NOT:
-        sqlUnaryOp = "NOT";
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported unary operation: " + unaryOp);
+    String sqlUnaryOp = unaryOpSqlMap.get(unaryOp);
+    if (sqlUnaryOp == null) {
+      throw new UnsupportedOperationException("Unsupported unary operation: " + unaryOp);
     }
+
     String operand = formatExpressionTree(unaryExpression.getOperand());
     return sqlUnaryOp + operand;
   }
 
+  /* package */ static Map<BinaryOperation, String> binaryOpSqlMap =
+      new EnumMap<>(BinaryOperation.class);
+
+  static {
+    binaryOpSqlMap.put(BinaryOperation.CONCATENATE, "||");
+    binaryOpSqlMap.put(BinaryOperation.MULTIPLY, "*");
+    binaryOpSqlMap.put(BinaryOperation.DIVIDE, "/");
+    binaryOpSqlMap.put(BinaryOperation.MODULO, "%");
+    binaryOpSqlMap.put(BinaryOperation.ADD, "+");
+    binaryOpSqlMap.put(BinaryOperation.SUBTRACT, "-");
+    binaryOpSqlMap.put(BinaryOperation.SHIFT_LEFT, "<<");
+    binaryOpSqlMap.put(BinaryOperation.SHIFT_RIGHT, ">>");
+    binaryOpSqlMap.put(BinaryOperation.BITWISE_AND, "&");
+    binaryOpSqlMap.put(BinaryOperation.BITWISE_OR, "|");
+    binaryOpSqlMap.put(BinaryOperation.LT, "<");
+    binaryOpSqlMap.put(BinaryOperation.LE, "<=");
+    binaryOpSqlMap.put(BinaryOperation.GE, ">=");
+    binaryOpSqlMap.put(BinaryOperation.GT, ">");
+    binaryOpSqlMap.put(BinaryOperation.EQ, "==");
+    binaryOpSqlMap.put(BinaryOperation.NEQ, "!=");
+    binaryOpSqlMap.put(BinaryOperation.IN, "IN");
+    binaryOpSqlMap.put(BinaryOperation.LIKE, "LIKE");
+    binaryOpSqlMap.put(BinaryOperation.GLOB, "GLOB");
+    binaryOpSqlMap.put(BinaryOperation.REGEXP, "REGEXP");
+    binaryOpSqlMap.put(BinaryOperation.AND, "AND");
+    binaryOpSqlMap.put(BinaryOperation.OR, "OR");
+  }
+
   private String formatBinaryExpression(BinaryExpression binaryExpression) {
-    String sqlBinaryOp;
     BinaryOperation binaryOp = binaryExpression.getOperation();
-    switch (binaryOp) {
-      case LT:
-        sqlBinaryOp = "<";
-        break;
-      case LE:
-        sqlBinaryOp = "<=";
-        break;
-      case GE:
-        sqlBinaryOp = ">=";
-        break;
-      case GT:
-        sqlBinaryOp = ">";
-        break;
-      case EQ:
-        sqlBinaryOp = "==";
-        break;
-      case NEQ:
-        sqlBinaryOp = "!=";
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported binary operation: " + binaryOp);
+    String sqlBinaryOp = binaryOpSqlMap.get(binaryOp);
+    if (sqlBinaryOp == null) {
+      throw new UnsupportedOperationException("Unsupported binary operation: " + binaryOp);
     }
     String leftOperand = formatExpressionTree(binaryExpression.getLeftOperand());
     StringBuilder result = new StringBuilder();
@@ -221,15 +239,18 @@ public class QueryFactory {
     return result.toString();
   }
 
+  /* package */ static Map<TrinaryOperation, String> trinaryOpSqlMap =
+      new EnumMap<>(TrinaryOperation.class);
+
+  static {
+    trinaryOpSqlMap.put(TrinaryOperation.BETWEEN, "BETWEEN");
+  }
+
   private String formatTrinaryExpression(TrinaryExpression trinaryExpression) {
-    String sqlTrinaryOp;
     TrinaryOperation trinaryOp = trinaryExpression.getOperation();
-    switch (trinaryOp) {
-      case BETWEEN:
-        sqlTrinaryOp = "BETWEEN";
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported trinary operation: " + trinaryOp);
+    String sqlTrinaryOp = trinaryOpSqlMap.get(trinaryOp);
+    if (sqlTrinaryOp == null) {
+      throw new UnsupportedOperationException("Unsupported trinary operation: " + trinaryOp);
     }
 
     String middleOperand = formatExpressionTree(trinaryExpression.getRightOperand0());

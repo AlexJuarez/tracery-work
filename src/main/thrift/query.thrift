@@ -11,12 +11,28 @@ struct UnaryExpression {
 }
 
 enum BinaryOperation {
+  CONCATENATE,// ||
+  MULTIPLY,   // *
+  DIVIDE,     // /
+  MODULO,     // %
+  ADD,        // +
+  SUBTRACT,   // -
+  SHIFT_LEFT, // <<
+  SHIFT_RIGHT,// >>
+  BITWISE_AND,// &
+  BITWISE_OR, // |
   LT,         // <
   LE,         // <=
   GE,         // >=
   GT,         // >
   EQ,         // =, ==
   NEQ,        // !=, <>
+  IN,         // IN
+  LIKE,       // LIKE
+  GLOB,       // GLOB
+  REGEXP,     // REGEXP
+  AND,        // AND
+  OR          // OR
 }
 struct BinaryExpression {
   1: required Expression leftOperand;
