@@ -2,6 +2,7 @@ package com.facebook.tracery.database;
 
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
+import com.facebook.tracery.thrift.query.QueryResultRow;
 import com.facebook.tracery.thrift.table.RawType;
 import com.facebook.tracery.thrift.table.Structure;
 import com.facebook.tracery.thrift.table.TableColumnType;
@@ -164,7 +165,7 @@ public class Database {
 
     List<String> resultColumnNames = new ArrayList<>();
     List<TableColumnType> resultColumnTypes = new ArrayList<>();
-    List<List<String>> resultRows = new ArrayList<>();
+    List<QueryResultRow> resultRows = new ArrayList<>();
     try (Statement statement = createStatement();
          ResultSet resultSet = statement.executeQuery(sql)) {
       statement.setEscapeProcessing(false);
@@ -185,7 +186,8 @@ public class Database {
         for (int columnIdx = 1; columnIdx <= numColumns; columnIdx++) {
           row.add(resultSet.getObject(columnIdx).toString());
         }
-        resultRows.add(row);
+        QueryResultRow resultRow = new QueryResultRow(row);
+        resultRows.add(resultRow);
       }
     }
 

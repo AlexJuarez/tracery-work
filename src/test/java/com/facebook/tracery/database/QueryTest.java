@@ -9,6 +9,7 @@ import com.facebook.tracery.thrift.query.Grouping;
 import com.facebook.tracery.thrift.query.Ordering;
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
+import com.facebook.tracery.thrift.query.QueryResultRow;
 import com.facebook.tracery.thrift.query.ResultColumn;
 import com.facebook.tracery.thrift.table.TableColumnType;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
@@ -67,14 +68,14 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("Fido", "3"),
-        Arrays.asList("Benji", "1"),
-        Arrays.asList("Oreo", "8"),
-        Arrays.asList("Bear", "8"),
-        Arrays.asList("Fido", "2")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("Fido", "3")),
+        new QueryResultRow(Arrays.asList("Benji", "1")),
+        new QueryResultRow(Arrays.asList("Oreo", "8")),
+        new QueryResultRow(Arrays.asList("Bear", "8")),
+        new QueryResultRow(Arrays.asList("Fido", "2"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     List<TableColumnType> expectedTypes = Arrays.asList(
@@ -95,14 +96,14 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("3"),
-        Arrays.asList("1"),
-        Arrays.asList("8"),
-        Arrays.asList("8"),
-        Arrays.asList("2")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("3")),
+        new QueryResultRow(Arrays.asList("1")),
+        new QueryResultRow(Arrays.asList("8")),
+        new QueryResultRow(Arrays.asList("8")),
+        new QueryResultRow(Arrays.asList("2"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     List<TableColumnType> expectedTypes = Arrays.asList(
@@ -139,11 +140,11 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("Fido", "3"),
-        Arrays.asList("Fido", "2")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("Fido", "3")),
+        new QueryResultRow(Arrays.asList("Fido", "2"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     List<TableColumnType> expectedTypes = Arrays.asList(
@@ -164,14 +165,14 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("Benji", "1"),
-        Arrays.asList("Fido", "2"),
-        Arrays.asList("Fido", "3"),
-        Arrays.asList("Bear", "8"),
-        Arrays.asList("Oreo", "8")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("Benji", "1")),
+        new QueryResultRow(Arrays.asList("Fido", "2")),
+        new QueryResultRow(Arrays.asList("Fido", "3")),
+        new QueryResultRow(Arrays.asList("Bear", "8")),
+        new QueryResultRow(Arrays.asList("Oreo", "8"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     List<TableColumnType> expectedTypes = Arrays.asList(
@@ -202,13 +203,13 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("Benji", "1"),
-        Arrays.asList("Fido", "5"),
-        Arrays.asList("Oreo", "8"),
-        Arrays.asList("Bear", "8")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("Benji", "1")),
+        new QueryResultRow(Arrays.asList("Fido", "5")),
+        new QueryResultRow(Arrays.asList("Oreo", "8")),
+        new QueryResultRow(Arrays.asList("Bear", "8"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     // NOTE: Mathematical operations like sum() cast operands to NUMERIC (INT / FLOAT) affinity.
@@ -244,8 +245,8 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Collections.emptyList();
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> expectedValues = Collections.emptyList();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     // Aggregation result columns have NULL type if there are no results.
@@ -264,11 +265,11 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("Fido", "3"),
-        Arrays.asList("Benji", "1")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("Fido", "3")),
+        new QueryResultRow(Arrays.asList("Benji", "1"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     List<TableColumnType> expectedTypes = Arrays.asList(
@@ -287,11 +288,11 @@ public class QueryTest {
     QueryResult queryResult = db.doSelectQuery(query);
     assertNotNull(queryResult);
 
-    List<List<String>> expectedValues = Arrays.asList(
-        Arrays.asList("Oreo", "8"),
-        Arrays.asList("Bear", "8")
+    List<QueryResultRow> expectedValues = Arrays.asList(
+        new QueryResultRow(Arrays.asList("Oreo", "8")),
+        new QueryResultRow(Arrays.asList("Bear", "8"))
     );
-    List<List<String>> actualValues = queryResult.getRows();
+    List<QueryResultRow> actualValues = queryResult.getRows();
     assertEquals(expectedValues, actualValues);
 
     List<TableColumnType> expectedTypes = Arrays.asList(

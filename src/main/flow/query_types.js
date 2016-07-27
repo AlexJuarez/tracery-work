@@ -127,11 +127,17 @@ declare module query_types {
     constructor(args?: { resultSet?: Array<ResultColumn>, distinct?: boolean, sourceTables: Array<string>, where?: Expression, groupBy?: Array<Grouping>, having?: Expression, orderBy?: Array<Ordering>, limit?: number, offset?: number }): void;
   }
 
+  declare class QueryResultRow {
+    cells: Array<string>;
+
+    constructor(args?: { cells: Array<string> }): void;
+  }
+
   declare class QueryResult {
     columnNames: Array<string>;
     columnTypes: Array<TableColumnType>;
-    rows: Array<Array<string>>;
+    rows: Array<QueryResultRow>;
 
-    constructor(args?: { columnNames: Array<string>, columnTypes: Array<TableColumnType>, rows: Array<Array<string>> }): void;
+    constructor(args?: { columnNames: Array<string>, columnTypes: Array<TableColumnType>, rows: Array<QueryResultRow> }): void;
   }
 }

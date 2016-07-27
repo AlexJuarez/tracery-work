@@ -62,6 +62,7 @@ module.exports = {
                 'Grouping,' +
                 'ResultColumn,' +
                 'Query,' +
+                'QueryResultRow,' +
                 'QueryResult!' +
               'imports-loader?Thrift=thrift,{TableColumnType}=table_types',
     },

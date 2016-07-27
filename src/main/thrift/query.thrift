@@ -115,8 +115,12 @@ struct Query {
   9: optional i32 offset = -1;
 }
 
+struct QueryResultRow {
+  1: required list<string> cells;
+}
+
 struct QueryResult {
   1: required list<string> columnNames;
   2: required list<table.TableColumnType> columnTypes;
-  3: required list<list<string>> rows;
+  3: required list<QueryResultRow> rows;
 }
