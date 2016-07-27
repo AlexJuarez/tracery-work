@@ -3,7 +3,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-const THRIFT_LIB_SRC_DIR = path.join(__dirname, 'lib/thrift');
+const THRIFT_LIB_SRC_DIR = path.join(__dirname, 'lib/js/thrift');
 const THRIFT_GENERATED_SRC_DIR = path.join(__dirname, 'build/generated-sources/thrift/gen-js');
 
 module.exports = {
