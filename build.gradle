@@ -133,7 +133,11 @@ dependencies {
     compile 'org.python:jython-standalone:2.7.0'
     compile 'org.apache.thrift:libthrift:0.9.3'
     compile 'com.healthmarketscience.sqlbuilder:sqlbuilder:2.1.4'
-    compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+    // JSON1 extension not available in latest official sqlite-jdbc release jar
+    // sqlite-jdbc snapshot built from https://github.com/xerial/sqlite-jdbc
+    // commit 26f8bdeb9897a0c25245280775c58343db38e0f1
+    compile files('lib/java/sqlite-jdbc-3.13.0-SNAPSHOT.jar')
+    //compile 'org.xerial:sqlite-jdbc:3.8.11.2'
     compile 'com.google.code.gson:gson:2.7'
 
     // Armeria (Thrift Server)
