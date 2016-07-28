@@ -77,6 +77,12 @@ public class ServerCommand extends AbstractCommand {
 
       serverStopped.await();
       logger.info("Tracery service stopped.");
+    } catch (Database.VersionMisatchException ex) {
+      logger.error("The tracery database '{}' has schema version {} but version {} is required. "
+              + "Please re-create the database or use a different version of the server.",
+          dbFile,
+          ex.getActualVersion(),
+          ex.getExpectedVersion());
     } finally {
       db.disconnect();
     }
