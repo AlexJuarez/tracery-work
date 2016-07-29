@@ -9,6 +9,8 @@
 
 import Thrift from 'thrift';
 import { TraceInfo } from 'tracery_types';
+import { TableInfo } from 'table_types';
+import { Query, QueryResult } from 'query_types';
 
 declare module TraceryService {
   declare class TraceryServiceClient {
@@ -22,6 +24,12 @@ declare module TraceryService {
 
     getTraces(callback: Function): void;
 
-    // TODO: getTable and query
+    getTable(tableName: string): TableInfo;
+
+    getTable(tableName: string, callback: Function): void;
+
+    query(query: Query): QueryResult;
+
+    query(query: Query, callback: Function): void;
   }
 }
