@@ -31,15 +31,19 @@ module.exports = {
     {
       test: /tracery_types\.js$/,
       include: THRIFT_GENERATED_SRC_DIR,
-      loader: 'exports-loader?TraceInfo!imports-loader?Thrift=thrift',
+      // IMPORTANT: Any time a new type is added to tracery_types, it must be added to the exports
+      // list here too
+      loader: 'exports-loader?TraceInfo=TraceInfo!imports-loader?Thrift=thrift',
     },
     {
       test: /TraceryService\.js$/,
       include: THRIFT_GENERATED_SRC_DIR,
-      loader: 'exports-loader?TraceryServiceClient!' +
+      // IMPORTANT: Any time TraceryServiceClient starts using a new type, an import must be added
+      // to the imports list here too
+      loader: 'exports-loader?TraceryServiceClient=TraceryServiceClient!' +
               'imports-loader?' +
                 'Thrift=thrift,' +
-                'TraceInfo=tracery_types',
+                '{TraceInfo}=tracery_types',
     },
     {
       test: /\.css$/,

@@ -7,13 +7,13 @@ import { combineReducers } from 'redux';
 
 import type { Action } from '../actions';
 import * as actions from '../actions';
-import type { TraceId, TraceInfo } from '../api/TraceInfo';
+import type { TraceInfo } from 'tracery_types';
 import type { FetchStatus, StatusCode } from '../api/FetchStatus';
 import fetchStatus from './_fetchStatus';
 
-type Ids = Array<TraceId>;
+type Ids = Array<string>;
 type Rows = {
-  [id: TraceId]: TraceInfo,
+  [id: string]: TraceInfo,
 }
 
 export type TraceInfosTable = {
@@ -52,7 +52,7 @@ function ids(state: Ids = [], action: Action<*>): Ids {
 export default combineReducers({ ids, rows, lastFetchStatus: fetchStatus });
 
 function getTraceInfos(state: TraceInfosTable): Array<TraceInfo> {
-  return state.ids.map((id: TraceId): TraceInfo => state.rows[id]);
+  return state.ids.map((id: string): TraceInfo => state.rows[id]);
 }
 
 export function getUrls(state: TraceInfosTable): Array<string> {
