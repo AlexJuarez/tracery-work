@@ -16,7 +16,7 @@ import type { TraceryService, GetTracesResult } from '../api/TraceryService';
 // such that we can just send an action of a particular shape and have all this stuff happen
 // without having to write a bunch of new code every time
 // TODO: Use normalizr for this
-export function loadTrace(): any {  // FlowFixMe: Need a good Thunk return type
+export function loadTraceList(): any {  // FlowFixMe: Need a good Thunk return type
   return (dispatch: Dispatch) => {
     dispatch(createAction(actions.START_OPEN_TRACE_FLOW));
     dispatch(createAction(actions.TRACES_TABLE_FETCH_BEGIN));
