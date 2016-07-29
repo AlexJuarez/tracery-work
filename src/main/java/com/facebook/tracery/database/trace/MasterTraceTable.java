@@ -64,8 +64,10 @@ public class MasterTraceTable extends Table {
 
   @Override
   protected void setupColumns() {
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
-    // Integer primary key implies UNIQUE and AUTOINCREMENT.
+    // INTEGER primary key implies UNIQUE and AUTOINCREMENT.
+    // The type must be exactly "INTEGER" in order for the column to be an alias of ROWID.
+    // https://www.sqlite.org/lang_createtable.html#rowid
+    columnTraceIndex = addCustomColumn(TRACE_INDEX_COLUMN_NAME, "INTEGER");
     columnTraceIndex.addPrimaryKeyConstraint("[Trace id primary key constraint]");
 
     columnTraceUrl = addColumn(URL_COLUMN_NAME, ColumnType.URL_COLUMN_TYPE);
@@ -92,6 +94,7 @@ public class MasterTraceTable extends Table {
       throws SQLException {
     String sql =
         new InsertQuery(getDbTable())
+            // insert null to auto-increment column - https://www.sqlite.org/faq.html#q1
             .addColumn(columnTraceIndex.getDbColumn(), null)
             .addColumn(columnTraceUrl.getDbColumn(), url != null ? url.toString() : null)
             .addColumn(columnBeginTime.getDbColumn(), beginTime)

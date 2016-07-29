@@ -15,11 +15,13 @@ public class Column {
   private DbTable dbTable;
   private DbColumn dbColumn;
 
-  public Column(DbTable dbTable, String name, TableColumnType type) {
+  public Column(DbTable dbTable, String name, String typeName) {
     this.dbTable = dbTable;
-
-    String typeName = Column.encodeType(type);
     dbColumn = dbTable.addColumn(name, typeName, null);
+  }
+
+  public Column(DbTable dbTable, String name, TableColumnType type) {
+    this(dbTable, name, Column.encodeType(type));
   }
 
   public void addForeignKeyConstraint(String constraintName, String refTableName, String

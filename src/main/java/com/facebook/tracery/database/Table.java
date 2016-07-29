@@ -127,6 +127,12 @@ public abstract class Table {
     return column;
   }
 
+  public Column addCustomColumn(String name, String typeName) {
+    Column column = new Column(dbTable, name, typeName);
+    columns.add(column);
+    return column;
+  }
+
   public DbTable getDbTable() {
     return dbTable;
   }
