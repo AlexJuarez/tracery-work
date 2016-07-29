@@ -2,7 +2,6 @@
 
 import type { Dispatch } from 'redux';
 
-// $FlowFixMe: Thrift JS library isn't even a module, nevermind Flow-enabled
 import Thrift from 'thrift';
 // $FlowFixMe: Generated Thrift code isn't even a module, nevermind Flow-enabled
 import TraceryServiceClient from 'TraceryService';
