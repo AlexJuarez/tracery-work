@@ -1,3 +1,4 @@
+include "table.thrift"
 namespace java com.facebook.tracery.thrift.query
 
 enum UnaryOperation {
@@ -10,12 +11,28 @@ struct UnaryExpression {
 }
 
 enum BinaryOperation {
+  CONCATENATE,// ||
+  MULTIPLY,   // *
+  DIVIDE,     // /
+  MODULO,     // %
+  ADD,        // +
+  SUBTRACT,   // -
+  SHIFT_LEFT, // <<
+  SHIFT_RIGHT,// >>
+  BITWISE_AND,// &
+  BITWISE_OR, // |
   LT,         // <
   LE,         // <=
   GE,         // >=
   GT,         // >
   EQ,         // =, ==
   NEQ,        // !=, <>
+  IN,         // IN
+  LIKE,       // LIKE
+  GLOB,       // GLOB
+  REGEXP,     // REGEXP
+  AND,        // AND
+  OR          // OR
 }
 struct BinaryExpression {
   1: required Expression leftOperand;
@@ -98,7 +115,12 @@ struct Query {
   9: optional i32 offset = -1;
 }
 
+struct QueryResultRow {
+  1: required list<string> cells;
+}
+
 struct QueryResult {
   1: required list<string> columnNames;
-  2: required list<list<string>> rows;
+  2: required list<table.TableColumnType> columnTypes;
+  3: required list<QueryResultRow> rows;
 }

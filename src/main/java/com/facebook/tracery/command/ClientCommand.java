@@ -11,13 +11,16 @@ import com.facebook.tracery.thrift.query.Aggregation;
 import com.facebook.tracery.thrift.query.BinaryExpression;
 import com.facebook.tracery.thrift.query.BinaryOperation;
 import com.facebook.tracery.thrift.query.Expression;
+import com.facebook.tracery.thrift.query.Grouping;
 import com.facebook.tracery.thrift.query.Ordering;
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
+import com.facebook.tracery.thrift.query.QueryResultRow;
 import com.facebook.tracery.thrift.query.ResultColumn;
 import com.facebook.tracery.thrift.query.ValueExpression;
 import com.facebook.tracery.thrift.table.TableColumnInfo;
 import com.facebook.tracery.thrift.table.TableInfo;
+import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TJSONProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
@@ -56,6 +59,18 @@ public class ClientCommand extends AbstractCommand {
     TProtocol protocol = new TJSONProtocol(transport);
     TraceryService.Client client = new TraceryService.Client(protocol);
 
+    testGetTraceList(client);
+
+    // List the filenames for the first N reads
+    testQueryListFileNames(client, 'R', 5);
+
+    // List the read counts per page for each *.dex file
+    testQueryListOperationCountsPerFile(client, 'R', "*.dex", 20);
+
+    transport.close();
+  }
+
+  private void testGetTraceList(TraceryService.Client client) throws TException {
     List<TraceInfo> traces = client.getTraces();
     for (TraceInfo trace : traces) {
       System.out.println(trace);
@@ -71,8 +86,10 @@ public class ClientCommand extends AbstractCommand {
       }
     }
     System.out.println();
+  }
 
-    // List the filenames and count for the first N reads
+  private void testQueryListFileNames(TraceryService.Client client, char operation, int limit)
+      throws TException {
     String diskPhysOpTableName = Table.getTableName(DiskPhysOpTable.class);
     Ordering orderByFileName = new Ordering(DiskPhysOpTable.FILE_NAME_COLUMN_NAME, true);
     ResultColumn fileNameResultColumn = new ResultColumn(
@@ -94,20 +111,94 @@ public class ClientCommand extends AbstractCommand {
                 ),
                 BinaryOperation.EQ,
                 Expression.valueExpression(
-                    new ValueExpression("'R'")
+                    new ValueExpression("'" + operation + "'")
                 )
             )))
         .setOrderBy(Arrays.asList(orderByFileName))
-        .setLimit(5);
+        .setLimit(limit);
 
     QueryResult selectReadsResult = client.query(selectReads);
     int rowNum = 1;
-    for (List<String> row : selectReadsResult.getRows()) {
-      System.out.printf("READ %-2d: %s%n", rowNum++, row.toString());
+    for (QueryResultRow row : selectReadsResult.getRows()) {
+      System.out.printf("READ %-2d: ", rowNum++);
+      for (String cell : row.getCells()) {
+        System.out.printf("%s\t", cell);
+      }
+      System.out.println();
     }
     System.out.println();
+  }
 
-    transport.close();
+  private void testQueryListOperationCountsPerFile(TraceryService.Client client, char operation,
+                                                   String fileGlob, int limit) throws TException {
+    String diskPhysOpTableName = Table.getTableName(DiskPhysOpTable.class);
+    ResultColumn fileNameResultColumn = new ResultColumn(
+        Expression.valueExpression(new ValueExpression("file_name")),
+        Aggregation.NONE
+    );
+
+    ResultColumn binNameResultColumn = new ResultColumn(
+        Expression.valueExpression(new ValueExpression("atom")),
+        Aggregation.NONE
+    );
+    binNameResultColumn.setResultAlias("binName");
+
+    ResultColumn binCountResultColumn = new ResultColumn(
+        Expression.valueExpression(new ValueExpression("atom")),
+        Aggregation.COUNT
+    );
+    binCountResultColumn.setResultAlias("binCount");
+
+    Grouping groupByFileName = new Grouping(DiskPhysOpTable.FILE_NAME_COLUMN_NAME);
+    Grouping groupByFileOp = new Grouping(DiskPhysOpTable.FILE_OP_COLUMN_NAME);
+    Grouping groupByPage = new Grouping("atom");
+
+    Ordering orderByFileName = new Ordering(DiskPhysOpTable.FILE_NAME_COLUMN_NAME, true);
+    Ordering orderByFileOp = new Ordering(DiskPhysOpTable.FILE_OP_COLUMN_NAME, true);
+    Ordering orderByBinName = new Ordering(binNameResultColumn.getResultAlias(), true);
+
+    Expression isWriteOp = Expression.binaryExpression(
+        new BinaryExpression(
+            Expression.valueExpression(
+                new ValueExpression(DiskPhysOpTable.FILE_OP_COLUMN_NAME)
+            ),
+            BinaryOperation.EQ,
+            Expression.valueExpression(
+                new ValueExpression("'" + operation + "'")
+            )
+        ));
+    Expression isDexFile = Expression.binaryExpression(
+        new BinaryExpression(
+            Expression.valueExpression(
+                new ValueExpression(DiskPhysOpTable.FILE_NAME_COLUMN_NAME)
+            ),
+            BinaryOperation.GLOB,
+            Expression.valueExpression(
+                new ValueExpression("'" + fileGlob + "'")
+            )
+        ));
+
+    Query histogramQuery = new Query()
+        .setResultSet(Arrays.asList(fileNameResultColumn, binNameResultColumn,
+            binCountResultColumn))
+        .setSourceTables(Arrays.asList(
+            diskPhysOpTableName,
+            String.format("json_each(%s)", DiskPhysOpTable.PAGES_COLUMN_NAME)))
+        .setWhere(Expression.binaryExpression(
+            new BinaryExpression(isWriteOp, BinaryOperation.AND, isDexFile)))
+        .setGroupBy(Arrays.asList(groupByFileName, groupByFileOp, groupByPage))
+        .setOrderBy(Arrays.asList(orderByFileName, orderByFileOp, orderByBinName))
+        .setLimit(limit);
+
+    QueryResult histogramResult = client.query(histogramQuery);
+
+    for (QueryResultRow row : histogramResult.getRows()) {
+      for (String cell : row.getCells()) {
+        System.out.printf("%s\t", cell);
+      }
+      System.out.println();
+    }
+    System.out.println();
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.facebook.tracery.database.trace;
 
 import com.facebook.tracery.database.Column;
+import com.facebook.tracery.database.ColumnType;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.database.JsonCoder;
 import com.facebook.tracery.database.Table;
@@ -63,15 +64,18 @@ public class MasterTraceTable extends Table {
 
   @Override
   protected void setupColumns() {
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
-    // Integer primary key implies UNIQUE and AUTOINCREMENT.
+    // INTEGER primary key implies UNIQUE and AUTOINCREMENT.
+    // The type must be exactly "INTEGER" in order for the column to be an alias of ROWID.
+    // https://www.sqlite.org/lang_createtable.html#rowid
+    columnTraceIndex = addCustomColumn(TRACE_INDEX_COLUMN_NAME, "INTEGER");
     columnTraceIndex.addPrimaryKeyConstraint("[Trace id primary key constraint]");
 
-    columnTraceUrl = addColumn(URL_COLUMN_NAME, Column.URL_COLUMN_TYPE);
-    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, Column.TEXT_COLUMN_TYPE);
-    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME, Column.NAME_ARRAY_COLUMN_TYPE);
+    columnTraceUrl = addColumn(URL_COLUMN_NAME, ColumnType.URL_COLUMN_TYPE);
+    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, ColumnType.TIMESTAMP_COLUMN_TYPE);
+    columnEndTime = addColumn(END_TIME_COLUMN_NAME, ColumnType.TIMESTAMP_COLUMN_TYPE);
+    columnDescription = addColumn(DESCRIPTION_COLUMN_NAME, ColumnType.TEXT_COLUMN_TYPE);
+    columnTraceTableNames = addColumn(TRACE_TABLE_NAMES_COLUMN_NAME,
+        ColumnType.NAME_ARRAY_COLUMN_TYPE);
   }
 
   /**
@@ -90,6 +94,7 @@ public class MasterTraceTable extends Table {
       throws SQLException {
     String sql =
         new InsertQuery(getDbTable())
+            // insert null to auto-increment column - https://www.sqlite.org/faq.html#q1
             .addColumn(columnTraceIndex.getDbColumn(), null)
             .addColumn(columnTraceUrl.getDbColumn(), url != null ? url.toString() : null)
             .addColumn(columnBeginTime.getDbColumn(), beginTime)

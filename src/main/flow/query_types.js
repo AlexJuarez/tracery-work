@@ -7,6 +7,8 @@
 //
 // @flow
 
+import { TableColumnType } from 'table_types';
+
 declare module query_types {
   declare var UnaryOperation: {
     NEGATE: number;
@@ -14,12 +16,28 @@ declare module query_types {
   }
 
   declare var BinaryOperation: {
+    CONCATENATE: number;
+    MULTIPLY: number;
+    DIVIDE: number;
+    MODULO: number;
+    ADD: number;
+    SUBTRACT: number;
+    SHIFT_LEFT: number;
+    SHIFT_RIGHT: number;
+    BITWISE_AND: number;
+    BITWISE_OR: number;
     LT: number;
     LE: number;
     GE: number;
     GT: number;
     EQ: number;
     NEQ: number;
+    IN: number;
+    LIKE: number;
+    GLOB: number;
+    REGEXP: number;
+    AND: number;
+    OR: number;
   }
 
   declare var TrinaryOperation: {
@@ -109,10 +127,17 @@ declare module query_types {
     constructor(args?: { resultSet?: Array<ResultColumn>, distinct?: boolean, sourceTables: Array<string>, where?: Expression, groupBy?: Array<Grouping>, having?: Expression, orderBy?: Array<Ordering>, limit?: number, offset?: number }): void;
   }
 
+  declare class QueryResultRow {
+    cells: Array<string>;
+
+    constructor(args?: { cells: Array<string> }): void;
+  }
+
   declare class QueryResult {
     columnNames: Array<string>;
-    rows: Array<Array<string>>;
+    columnTypes: Array<TableColumnType>;
+    rows: Array<QueryResultRow>;
 
-    constructor(args?: { columnNames: Array<string>, rows: Array<Array<string>> }): void;
+    constructor(args?: { columnNames: Array<string>, columnTypes: Array<TableColumnType>, rows: Array<QueryResultRow> }): void;
   }
 }

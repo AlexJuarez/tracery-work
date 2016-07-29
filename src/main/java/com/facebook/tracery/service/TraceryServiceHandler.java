@@ -42,7 +42,7 @@ public class TraceryServiceHandler implements TraceryService.Iface {
   @Override
   public QueryResult query(Query select) throws TException {
     try {
-      return db.doQuery(select);
+      return db.doSelectQuery(select);
     } catch (Exception ex) {
       throw new TException(ex);
     }

@@ -23,8 +23,8 @@ public class ExpressionFactory {
   }
 
   public static Expression createBinaryValueExpression(String leftOperand,
-                                                      BinaryOperation operation,
-                                                      String rightOperand) {
+                                                       BinaryOperation operation,
+                                                       String rightOperand) {
     Expression leftExpression = createValueExpression(leftOperand);
     Expression rightExpression = createValueExpression(rightOperand);
     return Expression.binaryExpression(new BinaryExpression(leftExpression, operation,
@@ -32,9 +32,9 @@ public class ExpressionFactory {
   }
 
   public static Expression createLeafTrinaryValueExpression(String leftOperand,
-                                                       TrinaryOperation operation,
-                                                       String rightOperand0,
-                                                       String rightOperand1) {
+                                                            TrinaryOperation operation,
+                                                            String rightOperand0,
+                                                            String rightOperand1) {
     Expression leftExpression = createValueExpression(leftOperand);
     Expression middleExpression = createValueExpression(rightOperand0);
     Expression rightExpression = createValueExpression(rightOperand1);

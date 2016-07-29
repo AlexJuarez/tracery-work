@@ -9,6 +9,7 @@
 
 declare module table_types {
   declare var RawType:{
+    NULL: number;
     BOOL: number;
     INT: number;
     FLOAT: number;

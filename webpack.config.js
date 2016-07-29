@@ -3,7 +3,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-const THRIFT_LIB_SRC_DIR = path.join(__dirname, 'lib/thrift');
+const THRIFT_LIB_SRC_DIR = path.join(__dirname, 'lib/js/thrift');
 const THRIFT_GENERATED_SRC_DIR = path.join(__dirname, 'build/generated-sources/thrift/gen-js');
 
 module.exports = {
@@ -62,8 +62,9 @@ module.exports = {
                 'Grouping,' +
                 'ResultColumn,' +
                 'Query,' +
+                'QueryResultRow,' +
                 'QueryResult!' +
-              'imports-loader?Thrift=thrift',
+              'imports-loader?Thrift=thrift,{TableColumnType}=table_types',
     },
     {
       test: /tracery_types\.js$/,

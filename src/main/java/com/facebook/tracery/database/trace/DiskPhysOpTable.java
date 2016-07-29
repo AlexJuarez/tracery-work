@@ -1,6 +1,7 @@
 package com.facebook.tracery.database.trace;
 
 import com.facebook.tracery.database.Column;
+import com.facebook.tracery.database.ColumnType;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.database.JsonCoder;
 import com.facebook.tracery.database.Table;
@@ -82,20 +83,20 @@ public class DiskPhysOpTable extends Table {
 
   @Override
   protected void setupColumns() {
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, ColumnType.INDEX_COLUMN_TYPE);
     columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
         Table.getTableName(MasterTraceTable.class),
         MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
 
-    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnEndTime = addColumn(END_TIME_COLUMN_NAME, Column.TIMESTAMP_COLUMN_TYPE);
-    columnFileOp = addColumn(FILE_OP_COLUMN_NAME, Column.NAME_COLUMN_TYPE);
-    columnThreadName = addColumn(THREAD_NAME_COLUMN_NAME, Column.NAME_COLUMN_TYPE);
-    columnCpu = addColumn(CPU_COLUMN_NAME, Column.ID_COLUMN_TYPE);
-    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
-    columnPageCount = addColumn(PAGE_COUNT_COLUMN_NAME, Column.COUNT_COLUMN_TYPE);
-    columnPages = addColumn(PAGES_COLUMN_NAME, Column.ID_ARRAY_COLUMN_TYPE);
-    columnSectors = addColumn(SECTORS_COLUMN_NAME, Column.ID_ARRAY_COLUMN_TYPE);
+    columnBeginTime = addColumn(BEGIN_TIME_COLUMN_NAME, ColumnType.TIMESTAMP_COLUMN_TYPE);
+    columnEndTime = addColumn(END_TIME_COLUMN_NAME, ColumnType.TIMESTAMP_COLUMN_TYPE);
+    columnFileOp = addColumn(FILE_OP_COLUMN_NAME, ColumnType.NAME_COLUMN_TYPE);
+    columnThreadName = addColumn(THREAD_NAME_COLUMN_NAME, ColumnType.NAME_COLUMN_TYPE);
+    columnCpu = addColumn(CPU_COLUMN_NAME, ColumnType.ID_COLUMN_TYPE);
+    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, ColumnType.PATH_COLUMN_TYPE);
+    columnPageCount = addColumn(PAGE_COUNT_COLUMN_NAME, ColumnType.COUNT_COLUMN_TYPE);
+    columnPages = addColumn(PAGES_COLUMN_NAME, ColumnType.ID_ARRAY_COLUMN_TYPE);
+    columnSectors = addColumn(SECTORS_COLUMN_NAME, ColumnType.ID_ARRAY_COLUMN_TYPE);
   }
 
   public void insertBatch(Statement statement, int traceIdx, DiskTraceItem item) throws

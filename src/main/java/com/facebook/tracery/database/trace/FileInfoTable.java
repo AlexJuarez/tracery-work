@@ -1,6 +1,7 @@
 package com.facebook.tracery.database.trace;
 
 import com.facebook.tracery.database.Column;
+import com.facebook.tracery.database.ColumnType;
 import com.facebook.tracery.database.Database;
 import com.facebook.tracery.database.Table;
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
@@ -48,14 +49,14 @@ public class FileInfoTable extends Table {
 
   @Override
   protected void setupColumns() {
-    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, Column.INDEX_COLUMN_TYPE);
+    columnTraceIndex = addColumn(TRACE_INDEX_COLUMN_NAME, ColumnType.INDEX_COLUMN_TYPE);
     columnTraceIndex.addForeignKeyConstraint("[Master trace table id column constraint.]",
         Table.getTableName(MasterTraceTable.class),
         MasterTraceTable.TRACE_INDEX_COLUMN_NAME);
 
-    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, Column.PATH_COLUMN_TYPE);
-    columnFileSize = addColumn(FILE_SIZE_COLUMN_NAME, Column.BYTES_COLUMN_TYPE);
-    columnInode = addColumn(INODE_COLUMN_NAME, Column.ID_COLUMN_TYPE);
+    columnFileName = addColumn(FILE_NAME_COLUMN_NAME, ColumnType.PATH_COLUMN_TYPE);
+    columnFileSize = addColumn(FILE_SIZE_COLUMN_NAME, ColumnType.BYTES_COLUMN_TYPE);
+    columnInode = addColumn(INODE_COLUMN_NAME, ColumnType.ID_COLUMN_TYPE);
   }
 
   public int indexOfFile(int traceIndex, String fileName) throws SQLException {
