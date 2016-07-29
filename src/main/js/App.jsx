@@ -66,7 +66,7 @@ function mapStateToProps(state: State): StateProps {
 }
 
 const mapDispatchToProps = {
-  onLoadClicked: actions.loadTrace,
+  onLoadClicked: actions.loadTraceList,
   onDemoClicked: actions.startHeatmapDemo,
 };
 
