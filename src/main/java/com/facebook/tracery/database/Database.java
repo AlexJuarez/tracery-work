@@ -184,7 +184,7 @@ public class Database {
       while (resultSet.next()) {
         List<String> row = new ArrayList<>(numColumns);
         for (int columnIdx = 1; columnIdx <= numColumns; columnIdx++) {
-          row.add(resultSet.getObject(columnIdx).toString());
+          row.add(String.valueOf(resultSet.getObject(columnIdx)));
         }
         QueryResultRow resultRow = new QueryResultRow(row);
         resultRows.add(resultRow);
