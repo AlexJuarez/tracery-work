@@ -12,7 +12,3 @@ export type Cache = {
 }
 
 export default combineReducers({ traceInfos });
-
-export function getTraceInfos(state: Cache): TraceInfosTable {
-  return state.traceInfos;
-}

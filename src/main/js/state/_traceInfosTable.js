@@ -8,7 +8,7 @@ import { combineReducers } from 'redux';
 import type { Action } from '../actions';
 import * as actions from '../actions';
 import type { TraceInfo } from 'tracery_types';
-import type { FetchStatus, StatusCode } from '../api/FetchStatus';
+import type { FetchStatus } from '../api/FetchStatus';
 import fetchStatus from './_fetchStatus';
 
 type Ids = Array<string>;
@@ -57,8 +57,4 @@ function getTraceInfos(state: TraceInfosTable): Array<TraceInfo> {
 
 export function getUrls(state: TraceInfosTable): Array<string> {
   return getTraceInfos(state).map((info: TraceInfo): string => info.traceUrl);
-}
-
-export function getLastFetchStatusCode(state: TraceInfosTable): StatusCode {
-  return state.lastFetchStatus.code;
 }
