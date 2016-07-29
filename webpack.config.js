@@ -29,6 +29,21 @@ module.exports = {
       loader: 'exports-loader?Thrift',
     },
     {
+      test: /table_types\.js$/,
+      include: THRIFT_GENERATED_SRC_DIR,
+      // IMPORTANT: Any time a new type is added to table_types, it must be added to the exports
+      // list here too
+      loader: 'exports-loader?' +
+                'RawType,' +
+                'Category,' +
+                'Unit,' +
+                'Structure,' +
+                'TableColumnType,' +
+                'TableColumnInfo,' +
+                'TableInfo!' +
+              'imports-loader?Thrift=thrift',
+    },
+    {
       test: /query_types\.js$/,
       include: THRIFT_GENERATED_SRC_DIR,
       // IMPORTANT: Any time a new type is added to query_types, it must be added to the exports
