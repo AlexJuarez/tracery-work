@@ -15,7 +15,7 @@ export type Query = {
   rows: Array<Array<string>>,
 };
 
-function id(state?: number, action: Action<*>): number {
+function id(state: number = -1, action: Action<*>): number {
   switch (action.type) {
     case actions.QUERY_STARTED:
     case actions.QUERY_FINISHED: {
@@ -29,7 +29,7 @@ function id(state?: number, action: Action<*>): number {
   }
 }
 
-function rows(state?: Array<Array<string>>, action: Action<*>): Array<Array<string>> {
+function rows(state: Array<Array<string>> = [], action: Action<*>): Array<Array<string>> {
   switch (action.type) {
     case actions.QUERY_STARTED:
       return [];

@@ -1,11 +1,12 @@
 // @flow
 
+import invariant from 'invariant';
+
 import { combineReducers } from 'redux';
 
 import type { StatusCode } from '../api/FetchStatus';
 import type { Cache } from './_cache';
 import cache from './_cache';
-import * as fromTraceInfos from './_traceInfosTable';
 
 import type { AppMode } from './appMode';
 import type { UiState } from './_ui';
@@ -22,13 +23,11 @@ export function getAppMode(state: State): AppMode {
   return state.ui.appMode;
 }
 
-export function getTraceUrls(state: State): Array<string> {
-  return fromTraceInfos.getUrls(state.cache.traceInfos);
-}
+export function getQueryId(state: State): number {
+  const queryId = state.ui.queryId;
+  invariant(queryId !== undefined && queryId != null, 'Expected a queryId.');
 
-// TODO: Need a generic fetch status mechanism
-export function getLastTracesTableFetchStatusCode(state: State): StatusCode {
-  return state.cache.traceInfos.lastFetchStatus.code;
+  return queryId;
 }
 
 export function getQueryRows(state: State, queryId: number): Array<Array<string>> {

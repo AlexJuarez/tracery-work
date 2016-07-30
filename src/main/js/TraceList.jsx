@@ -34,9 +34,21 @@ function TraceList(props: Props): React.Element<any> {
 }
 
 function mapStateToProps(state: State): Props {
+  const queryId = fromState.getQueryId(state);
+
+  const statusCode = fromState.getQueryFetchStatusCode(state, queryId);
+  if (statusCode === statusCodes.FAILURE) {
+    return {
+      items: [],
+      loading: false,
+      error: fromState.getQueryFetchErrorMessage(state, queryId) || 'Unknown error',
+    };
+  }
+
   return {
-    items: fromState.getTraceUrls(state),
-    loading: fromState.getLastTracesTableFetchStatusCode(state) === statusCodes.IN_PROGRESS,
+    items: fromState.getQueryRows(state, queryId)
+      .map((row: Array<string>): string => row[1]),
+    loading: statusCode === statusCodes.IN_PROGRESS,
   };
 }
 
