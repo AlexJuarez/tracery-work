@@ -1,5 +1,7 @@
 // @flow
 
+import invariant from 'invariant';
+
 // TODO: Move this to api
 import type { Action } from '../actions';
 import * as actions from '../actions';
@@ -18,6 +20,7 @@ export default function fetchStatus(
   switch (action.type) {
     case actions.TRACES_TABLE_FETCH_BEGIN:
     case actions.START_OPEN_TRACE_FLOW: // TODO: NO!
+    case actions.QUERY_STARTED:
       return {
         code: statusCodes.IN_PROGRESS,
       };
@@ -29,6 +32,12 @@ export default function fetchStatus(
       return {
         code: statusCodes.FAILURE,
         message: action.payload,
+      };
+    case actions.QUERY_FINISHED:
+      invariant(action.payload, 'Expected a payload');
+      return {
+        code: action.error ? statusCodes.FAILURE : statusCodes.SUCCESS,
+        message: action.error ? action.payload.message : undefined,
       };
     default:
       return state;

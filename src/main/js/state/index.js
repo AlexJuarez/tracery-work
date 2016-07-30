@@ -30,3 +30,19 @@ export function getTraceUrls(state: State): Array<string> {
 export function getLastTracesTableFetchStatusCode(state: State): StatusCode {
   return state.cache.traceInfos.lastFetchStatus.code;
 }
+
+export function getQueryRows(state: State, queryId: number): Array<Array<string>> {
+  return state.cache.queries.items[queryId].rows;
+}
+
+export function getQueryFetchStatusCode(state: State, queryId: number): StatusCode {
+  return state.cache.queries.items[queryId].fetchStatus.code;
+}
+
+export function getQueryFetchErrorMessage(state: State, queryId: number): ?string {
+  return state.cache.queries.items[queryId].fetchStatus.message;
+}
+
+export function getNumQueries(state: State): number {
+  return state.cache.queries.numQueries;
+}
