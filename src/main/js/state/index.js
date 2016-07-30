@@ -8,17 +8,18 @@ import cache from './_cache';
 import * as fromTraceInfos from './_traceInfosTable';
 
 import type { AppMode } from './appMode';
-import appMode from './_appMode';
+import type { UiState } from './_ui';
+import uiState from './_ui';
 
 export type State = {
-  appMode: AppMode,
+  ui: UiState,
   cache: Cache,
 }
 
-export default combineReducers({ appMode, cache });
+export default combineReducers({ ui: uiState, cache });
 
 export function getAppMode(state: State): AppMode {
-  return state.appMode;
+  return state.ui.appMode;
 }
 
 export function getTraceUrls(state: State): Array<string> {
