@@ -19,13 +19,14 @@ type StateProps = {
 
 type OwnProps = {
   loadingString: string,
+  onItemClicked: (key: any, event: SyntheticMouseEvent) => boolean,
 }
 
 type Props = StateProps & OwnProps;
 
 function QueryBackedList(props: Props): React.Element<any> {
   if (props.items.length) {
-    return <List items={props.items} />;
+    return <List items={props.items} onItemClicked={props.onItemClicked} />;
   }
 
   if (props.loading) {

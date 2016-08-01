@@ -20,6 +20,9 @@ export const START_HEATMAP_DEMO = 'START_HEATMAP_DEMO';
 /** Starts the Summary Table Demo */
 export const START_SUMMARY_TABLE_DEMO = 'START_SUMMARY_TABLE_DEMO';
 
+/** Shows a list of files for which we have heatmap data. */
+export const SHOW_FILE_LIST = 'SHOW_FILE_LIST';
+
 /** QUERY_STARTED: Indicates that a new query has started in the data layer. */
 export type QueryPayload = {
   id: number,
