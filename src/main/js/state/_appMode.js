@@ -10,6 +10,8 @@ export default function appMode(state: AppMode = appModes.STARTUP, action: Actio
   switch (action.type) {
     case actions.START_OPEN_TRACE_FLOW:
       return appModes.SELECT_TRACE;
+    case actions.SHOW_FILE_LIST:
+      return appModes.SELECT_FILE;
     case actions.START_HEATMAP_DEMO:
       return appModes.HEATMAP_DEMO;
     case actions.START_SUMMARY_TABLE_DEMO:

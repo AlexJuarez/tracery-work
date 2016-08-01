@@ -2,12 +2,17 @@
 
 import React from 'react';
 
+export type ListItem = {
+  label: string,
+  key: any,
+}
+
 type Props = {
-  items: Array<string>,
+  items: Array<ListItem>,
 }
 
 type DefaultProps = {
-  onItemClicked: (item: string, event: SyntheticMouseEvent) => boolean,
+  onItemClicked: (key: any, event: SyntheticMouseEvent) => boolean,
 }
 
 class List extends React.Component {
@@ -17,13 +22,17 @@ class List extends React.Component {
 
   renderListItems(): Array<React.Element<*>> {
     return this.props.items.map(
-      (item: string): React.Element<*> => (
+      (item: ListItem): React.Element<*> => (
         <li
-          key={item}
-          onClick={(event: SyntheticMouseEvent): boolean =>
-            this.props.onItemClicked(item, event)}
+          key={item.key}
         >
-          {item}
+          <a
+            href="#"
+            onClick={(event: SyntheticMouseEvent): boolean =>
+              this.props.onItemClicked(item.key, event)}
+          >
+          {item.label}
+          </a>
         </li>
       )
     );

@@ -10,7 +10,7 @@ import * as appModes from './state/appMode';
 import HeatmapDemo from './HeatmapDemo';
 import SummaryTableDemo from './SummaryTableDemo';
 import StartupMenu from './StartupMenu';
-import TraceList from './TraceList';
+import QueryBackedList from './QueryBackedList';
 import DevTools from './ui/devtools/DevTools';
 
 import * as actions from './actions';
@@ -27,6 +27,8 @@ type Props = {
   onLoadClicked: (event: SyntheticMouseEvent) => boolean,
   onDemoClicked: (event: SyntheticMouseEvent) => boolean,
   onSummaryTableDemoClicked: (event: SyntheticMouseEvent) => boolean,
+  onTraceClicked: (key: any, event: SyntheticMouseEvent) => boolean,
+  onFileClicked: (key: any, event: SyntheticMouseEvent) => boolean,
 } & StateProps;
 
 /** Root Application element, regardless of host environment. */
@@ -54,7 +56,15 @@ function renderContent(props: Props): ?React.Element<any> {
         onSummaryTableDemoClicked={props.onSummaryTableDemoClicked}
       />);
     case appModes.SELECT_TRACE:
-      return <TraceList />;
+      return (<QueryBackedList
+        loadingString="Loading trace list..."
+        onItemClicked={props.onTraceClicked}
+      />);
+    case appModes.SELECT_FILE:
+      return (<QueryBackedList
+        loadingString="Loading file list..."
+        onItemClicked={props.onFileClicked}
+      />);
     case appModes.HEATMAP_DEMO:
       return <HeatmapDemo width={props.width} height={props.height} />;
     case appModes.SUMMARY_TABLE_DEMO:
@@ -74,6 +84,8 @@ const mapDispatchToProps = {
   onLoadClicked: actions.loadTraceList,
   onDemoClicked: actions.startHeatmapDemo,
   onSummaryTableDemoClicked: actions.startSummaryTableDemo,
+  onTraceClicked: (traceId: number): boolean => actions.loadFileList(traceId, 'R'),
+  onFileClicked: actions.doNothing,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
