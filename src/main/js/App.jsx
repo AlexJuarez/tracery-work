@@ -10,7 +10,7 @@ import * as appModes from './state/appMode';
 import HeatmapDemo from './HeatmapDemo';
 import SummaryTableDemo from './SummaryTableDemo';
 import StartupMenu from './StartupMenu';
-import TraceList from './TraceList';
+import QueryBackedList from './QueryBackedList';
 import DevTools from './ui/devtools/DevTools';
 
 import * as actions from './actions';
@@ -54,7 +54,7 @@ function renderContent(props: Props): ?React.Element<any> {
         onSummaryTableDemoClicked={props.onSummaryTableDemoClicked}
       />);
     case appModes.SELECT_TRACE:
-      return <TraceList />;
+      return <QueryBackedList loadingString="Loading trace list..." />;
     case appModes.HEATMAP_DEMO:
       return <HeatmapDemo width={props.width} height={props.height} />;
     case appModes.SUMMARY_TABLE_DEMO:

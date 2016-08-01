@@ -10,20 +10,25 @@ import * as fromState from './state';
 
 import * as statusCodes from './api/FetchStatus';
 
-// TODO: Probably loading/error stuff goes elsewhere too
-type Props = {
+type StateProps = {
   items: Array<string>,
   loading: boolean,
   error?: string,
 }
 
-function TraceList(props: Props): React.Element<any> {
+type OwnProps = {
+  loadingString: string,
+}
+
+type Props = StateProps & OwnProps;
+
+function QueryBackedList(props: Props): React.Element<any> {
   if (props.items.length) {
     return <List items={props.items} />;
   }
 
   if (props.loading) {
-    return <span>Loading trace list...</span>;
+    return <span>{props.loadingString}</span>;
   }
 
   if (props.error) {
@@ -33,9 +38,8 @@ function TraceList(props: Props): React.Element<any> {
   invariant(false, 'Unexpected result');
 }
 
-function mapStateToProps(state: State): Props {
+function mapStateToProps(state: State): StateProps {
   const queryId = fromState.getQueryId(state);
-
   const statusCode = fromState.getQueryFetchStatusCode(state, queryId);
   if (statusCode === statusCodes.FAILURE) {
     return {
@@ -52,7 +56,7 @@ function mapStateToProps(state: State): Props {
   };
 }
 
-const ConnectedTraceList = connect(mapStateToProps)(TraceList);
+const ConnectedTraceList: (props: OwnProps) => React.Element<*> =
+  connect(mapStateToProps)(QueryBackedList);
 
-// TODO: Flow doesn't typecheck this.
 export default ConnectedTraceList;
