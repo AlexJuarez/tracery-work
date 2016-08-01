@@ -5,6 +5,12 @@ import type { Dispatch } from 'redux';
 import type { Action } from './_createAction';
 import createAction from './_createAction';
 
+/** Dummy action for getting defaults out of reducers. */
+export const DO_NOTHING = 'DO_NOTHING';
+export function doNothing(): Action<*> {
+  return createAction(DO_NOTHING);
+}
+
 /** Starts the UI flow for selecting and opening a trace. */
 export const START_OPEN_TRACE_FLOW = 'START_OPEN_TRACE_FLOW';
 
