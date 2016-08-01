@@ -3,8 +3,6 @@ package com.facebook.tracery.database;
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
 import com.facebook.tracery.thrift.query.QueryResultRow;
-import com.facebook.tracery.thrift.table.RawType;
-import com.facebook.tracery.thrift.table.Structure;
 import com.facebook.tracery.thrift.table.TableColumnType;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;

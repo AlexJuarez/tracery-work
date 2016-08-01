@@ -4,7 +4,6 @@ import org.python.core.PyList;
 import org.python.core.PyObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DiskTraceItem {
