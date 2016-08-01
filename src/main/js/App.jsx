@@ -1,19 +1,28 @@
 // @flow
 
 import React from 'react';
+import { connect } from 'react-redux';
 
+import type { State } from './state';
+import * as fromState from './state';
 import DevTools from './ui/devtools/DevTools';
 import View from './View';
 
-type Props = {
+type StateProps = {
+  viewId: number,
+}
+
+type OwnProps = {
   /** Height in dips */
   height: number,
   /** Width in dips */
-  width: number,
-};
+  width: number
+}
+
+type Props = StateProps & OwnProps;
 
 /** Root Application element, regardless of host environment. */
-export default function App(props: Props): React.Element<*> {
+function App(props: Props): React.Element<*> {
   return (
     <div
       style={{
@@ -22,8 +31,19 @@ export default function App(props: Props): React.Element<*> {
         overflow: 'hidden',
       }}
     >
-      <View width={props.width} height={props.height} />
+      <View viewId={props.viewId} width={props.width} height={props.height} />
       {!window.devToolsExtension && <DevTools />}
     </div>
   );
 }
+
+function mapStateToProps(state: State): StateProps {
+  return {
+    viewId: fromState.getRootViewId(state),
+  };
+}
+
+const ConnectedApp: (props: OwnProps) => React.Element<*> =
+  connect(mapStateToProps)(App);
+
+export default ConnectedApp;

@@ -23,12 +23,12 @@ export function getRootViewId(state: State): number {
   return state.ui.rootViewId;
 }
 
-export function getViewType(state: State): ViewType {
-  return state.ui.views[getRootViewId(state)].viewType;
+export function getViewType(state: State, viewId: number): ViewType {
+  return state.ui.views[viewId].viewType;
 }
 
-export function getQueryId(state: State): number {
-  const queryId = state.ui.views[getRootViewId(state)].state.queryId;
+export function getQueryId(state: State, viewId: number): number {
+  const queryId = state.ui.views[viewId].state.queryId;
   invariant(queryId !== undefined && queryId != null, 'Expected a queryId.');
 
   return queryId;

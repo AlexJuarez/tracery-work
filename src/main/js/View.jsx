@@ -18,11 +18,15 @@ type StateProps = {
   viewType: string,
 }
 
-type Props = StateProps & {
+type OwnProps = {
+  viewId: number,
   /** Height in dips */
   height: number,
   /** Width in dips */
   width: number,
+}
+
+type Props = OwnProps & StateProps & {
   onLoadClicked: (event: SyntheticMouseEvent) => boolean,
   onDemoClicked: (event: SyntheticMouseEvent) => boolean,
   onSummaryTableDemoClicked: (event: SyntheticMouseEvent) => boolean,
@@ -38,13 +42,18 @@ function View(props: Props): ?React.Element<any> {
         onDemoClicked={props.onDemoClicked}
         onSummaryTableDemoClicked={props.onSummaryTableDemoClicked}
       />);
+    // TODO: Move loading string to state
+    // TODO: Introduce middleware for async actions, move click handler to state
+    // TODO: Change ViewType to be QUERY_BACKED_LIST and just spread the viewSpecificState to props
     case viewTypes.SELECT_TRACE:
       return (<QueryBackedList
+        viewId={props.viewId}
         loadingString="Loading trace list..."
         onItemClicked={props.onTraceClicked}
       />);
     case viewTypes.SELECT_FILE:
       return (<QueryBackedList
+        viewId={props.viewId}
         loadingString="Loading file list..."
         onItemClicked={props.onFileClicked}
       />);
@@ -57,9 +66,9 @@ function View(props: Props): ?React.Element<any> {
   }
 }
 
-function mapStateToProps(state: State): StateProps {
+function mapStateToProps(state: State, ownProps: OwnProps): StateProps {
   return {
-    viewType: getViewType(state),
+    viewType: getViewType(state, ownProps.viewId),
   };
 }
 
