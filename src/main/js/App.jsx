@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import React from 'react';
 
 import type { State } from './state';
-import { getAppMode } from './state';
-import * as appModes from './state/appMode';
+import { getViewType } from './state';
+import * as viewTypes from './state/viewType';
 
 import HeatmapDemo from './HeatmapDemo';
 import SummaryTableDemo from './SummaryTableDemo';
@@ -16,7 +16,7 @@ import DevTools from './ui/devtools/DevTools';
 import * as actions from './actions';
 
 type StateProps = {
-  appMode: string,
+  viewType: string,
 }
 
 type Props = {
@@ -48,26 +48,26 @@ function App(props: Props): React.Element<*> {
 }
 
 function renderContent(props: Props): ?React.Element<any> {
-  switch (props.appMode) {
-    case appModes.STARTUP:
+  switch (props.viewType) {
+    case viewTypes.STARTUP:
       return (<StartupMenu
         onLoadClicked={props.onLoadClicked}
         onDemoClicked={props.onDemoClicked}
         onSummaryTableDemoClicked={props.onSummaryTableDemoClicked}
       />);
-    case appModes.SELECT_TRACE:
+    case viewTypes.SELECT_TRACE:
       return (<QueryBackedList
         loadingString="Loading trace list..."
         onItemClicked={props.onTraceClicked}
       />);
-    case appModes.SELECT_FILE:
+    case viewTypes.SELECT_FILE:
       return (<QueryBackedList
         loadingString="Loading file list..."
         onItemClicked={props.onFileClicked}
       />);
-    case appModes.HEATMAP_DEMO:
+    case viewTypes.HEATMAP_DEMO:
       return <HeatmapDemo width={props.width} height={props.height} />;
-    case appModes.SUMMARY_TABLE_DEMO:
+    case viewTypes.SUMMARY_TABLE_DEMO:
       return <SummaryTableDemo />;
     default:
       return null;
@@ -76,7 +76,7 @@ function renderContent(props: Props): ?React.Element<any> {
 
 function mapStateToProps(state: State): StateProps {
   return {
-    appMode: getAppMode(state),
+    viewType: getViewType(state),
   };
 }
 

@@ -8,7 +8,7 @@ import type { StatusCode } from '../api/FetchStatus';
 import type { Cache } from './_cache';
 import cache from './_cache';
 
-import type { AppMode } from './appMode';
+import type { ViewType } from './viewType';
 import type { UiState } from './_ui';
 import uiState from './_ui';
 
@@ -19,8 +19,8 @@ export type State = {
 
 export default combineReducers({ ui: uiState, cache });
 
-export function getAppMode(state: State): AppMode {
-  return state.ui.appMode;
+export function getViewType(state: State): ViewType {
+  return state.ui.viewType;
 }
 
 export function getQueryId(state: State): number {

@@ -1,18 +1,18 @@
 // @flow
 
-import type { AppMode } from './appMode';
-import appMode from './_appMode';
+import type { ViewType } from './viewType';
+import viewType from './_viewType';
 import type { Action } from '../actions';
 
 export type UiState = {
-  appMode: AppMode,
+  viewType: ViewType,
   queryId?: number,
 }
 
 // Manually wrote this reducer rather than using combineReducers because
 // combineReducers doesn't deal well with optional fields like queryId
 export default function ui(state?: UiState, action: Action<*>): UiState {
-  const stateAppMode = state ? state.appMode : undefined;
+  const stateViewType = state ? state.viewType : undefined;
 
   switch (action.type) {
     default: {
@@ -22,7 +22,7 @@ export default function ui(state?: UiState, action: Action<*>): UiState {
       }
 
       return {
-        appMode: appMode(stateAppMode, action),
+        viewType: viewType(stateViewType, action),
         queryId,
       };
     }
