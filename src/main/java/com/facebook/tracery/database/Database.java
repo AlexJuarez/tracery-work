@@ -3,8 +3,6 @@ package com.facebook.tracery.database;
 import com.facebook.tracery.thrift.query.Query;
 import com.facebook.tracery.thrift.query.QueryResult;
 import com.facebook.tracery.thrift.query.QueryResultRow;
-import com.facebook.tracery.thrift.table.RawType;
-import com.facebook.tracery.thrift.table.Structure;
 import com.facebook.tracery.thrift.table.TableColumnType;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
@@ -30,6 +28,8 @@ import java.util.Map;
  * Tracery file database connection wrapper.
  */
 public class Database {
+  public static final int DATABASE_SCHEMA_VERSION = 1;
+
   private static final int DEFAULT_STATEMENT_TIMEOUT_SEC = 30;
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -45,6 +45,28 @@ public class Database {
   public enum Access {
     READ_ONLY,
     READ_WRITE
+  }
+
+  public static class VersionMisatchException extends RuntimeException {
+    static final long serialVersionUID = -1L;
+
+    private final int expectedVersion;
+    private final int actualVersion;
+
+    public VersionMisatchException(int expectedVersion, int actualVersion) {
+      super(String.format(String.format("Version mismatch - expected version %d but was %d.",
+          expectedVersion, actualVersion)));
+      this.expectedVersion = expectedVersion;
+      this.actualVersion = actualVersion;
+    }
+
+    public int getExpectedVersion() {
+      return expectedVersion;
+    }
+
+    public int getActualVersion() {
+      return actualVersion;
+    }
   }
 
   /**
@@ -83,6 +105,14 @@ public class Database {
 
       dbSpec = new DbSpec();
       dbSchema = dbSpec.addDefaultSchema();
+
+      int dbVersion = getDatabaseSchemaVersion();
+      if (dbVersion <= 0 && !connection.isReadOnly()) {
+        // new (writeable) database
+        updateDatabaseSchemaVersion();
+      } else if (dbVersion != DATABASE_SCHEMA_VERSION) {
+        throw new VersionMisatchException(DATABASE_SCHEMA_VERSION, dbVersion);
+      }
     }
   }
 
@@ -129,6 +159,25 @@ public class Database {
     statement.setQueryTimeout(DEFAULT_STATEMENT_TIMEOUT_SEC);
 
     return statement;
+  }
+
+  public int getDatabaseSchemaVersion() {
+    String sql = "PRAGMA user_version;";
+
+    try (Statement statement = createStatement();
+         ResultSet resultSet = statement.executeQuery(sql)) {
+      return resultSet.getInt(1);
+    } catch (SQLException ex) {
+      return -1;
+    }
+  }
+
+  private void updateDatabaseSchemaVersion() throws SQLException {
+    String sql = String.format("PRAGMA user_version = %d;", DATABASE_SCHEMA_VERSION);
+
+    try (Statement statement = createStatement()) {
+      statement.execute(sql);
+    }
   }
 
   @SuppressWarnings("unchecked")

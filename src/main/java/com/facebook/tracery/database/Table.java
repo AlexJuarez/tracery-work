@@ -1,14 +1,11 @@
 package com.facebook.tracery.database;
 
-import com.facebook.tracery.database.trace.MasterTraceTable;
 import com.facebook.tracery.thrift.table.TableColumnInfo;
 import com.facebook.tracery.thrift.table.TableColumnType;
 import com.facebook.tracery.thrift.table.TableInfo;
 import com.healthmarketscience.sqlbuilder.CreateTableQuery;
 import com.healthmarketscience.sqlbuilder.CustomSql;
-import com.healthmarketscience.sqlbuilder.InsertQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,9 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Top-level database table wrapper.
