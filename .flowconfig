@@ -11,11 +11,10 @@ src/main/js
 src/main/flow
 
 [options]
-module.name_mapper='^\(.*\)\.css$' -> '<PROJECT_ROOT>/CSSModule.js.flow'
-module.name_mapper='^\(.*\)\.less$' -> '<PROJECT_ROOT>/CSSModule.js.flow'
+module.name_mapper.extension='css' -> '<PROJECT_ROOT>/src/main/js/CSSModule.js.flow'
+module.name_mapper.extension='less' -> '<PROJECT_ROOT>/src/main/js/CSSModule.js.flow'
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 suppress_comment= \\(.\\|\n\\)*\\$FlowIssue
 
 [version]
-# Don't upgrade to 0.29.0; it breaks the module.name_mapper line above 
-0.28.0
+^0.30.0
