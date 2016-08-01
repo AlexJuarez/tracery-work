@@ -1,30 +1,50 @@
 // @flow
 
-import type { ViewType } from './viewType';
-import viewType from './_viewType';
+import type { ViewState } from './_view';
+import view from './_view';
 import type { Action } from '../actions';
+import * as actions from '../actions';
 
-export type UiState = {
-  viewType: ViewType,
-  queryId?: number,
+type Views = {
+  [id: number]: ViewState<any>;
 }
 
-// Manually wrote this reducer rather than using combineReducers because
-// combineReducers doesn't deal well with optional fields like queryId
-export default function ui(state?: UiState, action: Action<*>): UiState {
-  const stateViewType = state ? state.viewType : undefined;
+export type UiState = {
+  nextViewId: number,
+  rootViewId: number,
+  viewIds: Array<number>,
+  views: Views,
+}
+
+export default function uiState(state?: UiState, action: Action<*>): UiState {
+  if (!state) {
+    const views = {};
+    views[0] = view(undefined, actions.doNothing());
+    return {
+      nextViewId: 0,
+      rootViewId: 0,
+      viewIds: [0],
+      views,
+    };
+  }
 
   switch (action.type) {
-    default: {
-      let queryId = state ? state.queryId : undefined;
-      if (action.payload && 'queryId' in action.payload) {
-        queryId = action.payload.queryId;
-      }
+    // TODO: CHANGE_APP_MODE?
+    case actions.START_OPEN_TRACE_FLOW:
+    case actions.SHOW_FILE_LIST:
+    case actions.START_HEATMAP_DEMO:
+    case actions.START_SUMMARY_TABLE_DEMO: {
+      const views = {};
+      views[0] = view(undefined, action);
 
       return {
-        viewType: viewType(stateViewType, action),
-        queryId,
+        nextViewId: 1,
+        rootViewId: 0,
+        viewIds: [0],
+        views,
       };
     }
+    default:
+      return state;
   }
 }

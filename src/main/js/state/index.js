@@ -19,12 +19,16 @@ export type State = {
 
 export default combineReducers({ ui: uiState, cache });
 
+export function getRootViewId(state: State): number {
+  return state.ui.rootViewId;
+}
+
 export function getViewType(state: State): ViewType {
-  return state.ui.viewType;
+  return state.ui.views[getRootViewId(state)].viewType;
 }
 
 export function getQueryId(state: State): number {
-  const queryId = state.ui.queryId;
+  const queryId = state.ui.views[getRootViewId(state)].state.queryId;
   invariant(queryId !== undefined && queryId != null, 'Expected a queryId.');
 
   return queryId;
