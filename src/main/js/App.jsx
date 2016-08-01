@@ -1,35 +1,25 @@
 // @flow
 
-import { connect } from 'react-redux';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import type { State } from './state';
-import { getAppMode } from './state';
-import * as appModes from './state/appMode';
-
-import HeatmapDemo from './HeatmapDemo';
-import SummaryTableDemo from './SummaryTableDemo';
-import StartupMenu from './StartupMenu';
-import QueryBackedList from './QueryBackedList';
+import * as fromState from './state';
 import DevTools from './ui/devtools/DevTools';
-
-import * as actions from './actions';
+import View from './View';
 
 type StateProps = {
-  appMode: string,
+  viewId: number,
 }
 
-type Props = {
+type OwnProps = {
   /** Height in dips */
   height: number,
   /** Width in dips */
-  width: number,
-  onLoadClicked: (event: SyntheticMouseEvent) => boolean,
-  onDemoClicked: (event: SyntheticMouseEvent) => boolean,
-  onSummaryTableDemoClicked: (event: SyntheticMouseEvent) => boolean,
-  onTraceClicked: (key: any, event: SyntheticMouseEvent) => boolean,
-  onFileClicked: (key: any, event: SyntheticMouseEvent) => boolean,
-} & StateProps;
+  width: number
+}
+
+type Props = StateProps & OwnProps;
 
 /** Root Application element, regardless of host environment. */
 function App(props: Props): React.Element<*> {
@@ -41,51 +31,19 @@ function App(props: Props): React.Element<*> {
         overflow: 'hidden',
       }}
     >
-      {renderContent(props)}
+      <View viewId={props.viewId} width={props.width} height={props.height} />
       {!window.devToolsExtension && <DevTools />}
     </div>
   );
 }
 
-function renderContent(props: Props): ?React.Element<any> {
-  switch (props.appMode) {
-    case appModes.STARTUP:
-      return (<StartupMenu
-        onLoadClicked={props.onLoadClicked}
-        onDemoClicked={props.onDemoClicked}
-        onSummaryTableDemoClicked={props.onSummaryTableDemoClicked}
-      />);
-    case appModes.SELECT_TRACE:
-      return (<QueryBackedList
-        loadingString="Loading trace list..."
-        onItemClicked={props.onTraceClicked}
-      />);
-    case appModes.SELECT_FILE:
-      return (<QueryBackedList
-        loadingString="Loading file list..."
-        onItemClicked={props.onFileClicked}
-      />);
-    case appModes.HEATMAP_DEMO:
-      return <HeatmapDemo width={props.width} height={props.height} />;
-    case appModes.SUMMARY_TABLE_DEMO:
-      return <SummaryTableDemo />;
-    default:
-      return null;
-  }
-}
-
 function mapStateToProps(state: State): StateProps {
   return {
-    appMode: getAppMode(state),
+    viewId: fromState.getRootViewId(state),
   };
 }
 
-const mapDispatchToProps = {
-  onLoadClicked: actions.loadTraceList,
-  onDemoClicked: actions.startHeatmapDemo,
-  onSummaryTableDemoClicked: actions.startSummaryTableDemo,
-  onTraceClicked: (traceId: number): boolean => actions.loadFileList(traceId, 'R'),
-  onFileClicked: actions.doNothing,
-};
+const ConnectedApp: (props: OwnProps) => React.Element<*> =
+  connect(mapStateToProps)(App);
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default ConnectedApp;

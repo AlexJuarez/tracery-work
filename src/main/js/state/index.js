@@ -8,7 +8,7 @@ import type { StatusCode } from '../api/FetchStatus';
 import type { Cache } from './_cache';
 import cache from './_cache';
 
-import type { AppMode } from './appMode';
+import type { ViewType } from './viewType';
 import type { UiState } from './_ui';
 import uiState from './_ui';
 
@@ -19,12 +19,16 @@ export type State = {
 
 export default combineReducers({ ui: uiState, cache });
 
-export function getAppMode(state: State): AppMode {
-  return state.ui.appMode;
+export function getRootViewId(state: State): number {
+  return state.ui.rootViewId;
 }
 
-export function getQueryId(state: State): number {
-  const queryId = state.ui.queryId;
+export function getViewType(state: State, viewId: number): ViewType {
+  return state.ui.views[viewId].viewType;
+}
+
+export function getQueryId(state: State, viewId: number): number {
+  const queryId = state.ui.views[viewId].state.queryId;
   invariant(queryId !== undefined && queryId != null, 'Expected a queryId.');
 
   return queryId;

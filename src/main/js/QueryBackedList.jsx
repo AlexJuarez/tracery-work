@@ -18,6 +18,7 @@ type StateProps = {
 }
 
 type OwnProps = {
+  viewId: number,
   loadingString: string,
   onItemClicked: (key: any, event: SyntheticMouseEvent) => boolean,
 }
@@ -40,8 +41,8 @@ function QueryBackedList(props: Props): React.Element<any> {
   invariant(false, 'Unexpected result');
 }
 
-function mapStateToProps(state: State): StateProps {
-  const queryId = fromState.getQueryId(state);
+function mapStateToProps(state: State, ownProps: OwnProps): StateProps {
+  const queryId = fromState.getQueryId(state, ownProps.viewId);
   const statusCode = fromState.getQueryFetchStatusCode(state, queryId);
   if (statusCode === statusCodes.FAILURE) {
     return {
