@@ -4,6 +4,7 @@ import invariant from 'invariant';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import type { ListItem } from './ui/controls/List';
 import List from './ui/controls/List';
 import type { State } from './state';
 import * as fromState from './state';
@@ -11,7 +12,7 @@ import * as fromState from './state';
 import * as statusCodes from './api/FetchStatus';
 
 type StateProps = {
-  items: Array<string>,
+  items: Array<ListItem>,
   loading: boolean,
   error?: string,
 }
@@ -51,7 +52,11 @@ function mapStateToProps(state: State): StateProps {
 
   return {
     items: fromState.getQueryRows(state, queryId)
-      .map((row: Array<string>): string => row[1]),
+      .map((row: Array<string>): ListItem => {
+        const key = row[0];
+        const label = row[1];
+        return { key, label };
+      }),
     loading: statusCode === statusCodes.IN_PROGRESS,
   };
 }
