@@ -1,6 +1,7 @@
 // @flow
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const LessPluginCleanCSS = require('less-plugin-clean-css');
 const path = require('path');
 
 const THRIFT_LIB_SRC_DIR = path.join(__dirname, 'lib/js/thrift');
@@ -86,7 +87,20 @@ module.exports = {
     {
       test: /\.css$/,
       loader: 'style-loader!css-loader',
+    },
+    {
+      test: /\.less$/,
+      loader: 'style!css!less',
+    },
+    {
+      test: /\.json$/,
+      loader: 'json',
     }],
+  },
+  lessLoader: {
+    lessPlugins: [
+      new LessPluginCleanCSS({ advanced: true }),
+    ],
   },
   output: {
     devtoolModuleFilenameTemplate: '/[resource-path]',
