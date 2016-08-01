@@ -8,6 +8,7 @@ import { getAppMode } from './state';
 import * as appModes from './state/appMode';
 
 import HeatmapDemo from './HeatmapDemo';
+import SummaryTableDemo from './SummaryTableDemo';
 import StartupMenu from './StartupMenu';
 import TraceList from './TraceList';
 import DevTools from './ui/devtools/DevTools';
@@ -25,6 +26,7 @@ type Props = {
   width: number,
   onLoadClicked: (event: SyntheticMouseEvent) => boolean,
   onDemoClicked: (event: SyntheticMouseEvent) => boolean,
+  onSummaryTableDemoClicked: (event: SyntheticMouseEvent) => boolean,
 } & StateProps;
 
 /** Root Application element, regardless of host environment. */
@@ -49,11 +51,14 @@ function renderContent(props: Props): ?React.Element<any> {
       return (<StartupMenu
         onLoadClicked={props.onLoadClicked}
         onDemoClicked={props.onDemoClicked}
+        onSummaryTableDemoClicked={props.onSummaryTableDemoClicked}
       />);
     case appModes.SELECT_TRACE:
       return <TraceList />;
     case appModes.HEATMAP_DEMO:
       return <HeatmapDemo width={props.width} height={props.height} />;
+    case appModes.SUMMARY_TABLE_DEMO:
+      return <SummaryTableDemo />;
     default:
       return null;
   }
@@ -68,6 +73,7 @@ function mapStateToProps(state: State): StateProps {
 const mapDispatchToProps = {
   onLoadClicked: actions.loadTraceList,
   onDemoClicked: actions.startHeatmapDemo,
+  onSummaryTableDemoClicked: actions.startSummaryTableDemo,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

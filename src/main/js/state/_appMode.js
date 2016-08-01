@@ -12,6 +12,8 @@ export default function appMode(state: AppMode = appModes.STARTUP, action: Actio
       return appModes.SELECT_TRACE;
     case actions.START_HEATMAP_DEMO:
       return appModes.HEATMAP_DEMO;
+    case actions.START_SUMMARY_TABLE_DEMO:
+      return appModes.SUMMARY_TABLE_DEMO;
     default:
       return state;
   }
