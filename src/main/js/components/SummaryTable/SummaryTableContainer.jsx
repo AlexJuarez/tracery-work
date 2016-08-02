@@ -8,11 +8,12 @@ import React, { Component } from 'react';
 import { List } from 'immutable';
 import SummaryTableRow from './SummaryTableRow';
 import ScrollState from './records/ScrollState';
-import { Header } from '.';
+import { Header } from './';
 
-import type { Headers, Rows } from './constants';
+import type { Headers, Rows, ColumnOrder } from './constants';
 
 type Props = {
+  columnOrder: ColumnOrder,
   viewSizeInRows: number,
   rowHeight: number,
   rows: Rows,
@@ -73,6 +74,7 @@ export default class SummaryTableContainer extends Component {
       rows.push(
         <SummaryTableRow
           key={key}
+          columnOrder={this.props.columnOrder}
           data={data == null ? new List() : data}
           height={rowHeight}
           rowNumber={i}

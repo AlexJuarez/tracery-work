@@ -233,6 +233,7 @@ export default class SummaryTable extends Component {
         style={{ height: `${this.state.tableBodyHeight}px` }}
       >
         <SummaryTableContainer
+          columnOrder={this.state.columnOrder}
           headers={this.state.headers}
           viewSizeInRows={this.state.viewSizeInRows}
           rowHeight={this.state.rowHeight}
@@ -251,6 +252,7 @@ export default class SummaryTable extends Component {
 
     return (
       <TableSizing
+        columnOrder={this.state.columnOrder}
         rows={this.props.rows}
         headers={this.state.headers}
         width={this.props.width}

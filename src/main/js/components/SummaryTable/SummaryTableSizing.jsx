@@ -16,9 +16,10 @@ import SummaryTableRow from './SummaryTableRow';
 
 import { ON_RESIZE_ROW_COUNT, RESIZE_REFRESH_RATE } from './constants';
 
-import type { OnResize, OnHeaderUpdate, Rows, Headers } from './constants';
+import type { ColumnOrder, OnResize, OnHeaderUpdate, Rows, Headers } from './constants';
 
 type Props = {
+  columnOrder: ColumnOrder,
   headers: Headers,
   rows: Rows,
   height: number,
@@ -32,12 +33,6 @@ type Props = {
 type State = {
   headerHeight: number,
 };
-
-function renderRow(r: List<*>, rowNumber: number): React.Element<*> {
-  return (
-    <SummaryTableRow data={r} rowNumber={rowNumber} key={rowNumber} />
-  );
-}
 
 /**
  * This is a hidden table rendering that updates the size of the columns
@@ -109,7 +104,7 @@ export default class SummaryTableSizing extends Component {
       }
 
       return (
-        <th className="summary-table-cell" style={style} key={header.title}>
+        <th className="summary-table-header-cell" style={style} key={header.title}>
           {header.title}
         </th>
       );
@@ -118,7 +113,17 @@ export default class SummaryTableSizing extends Component {
 
   _renderRows(): Array<React.Element<*>> {
     return this.props.rows.valueSeq().take(ON_RESIZE_ROW_COUNT).toArray()
-      .map(renderRow);
+      .map((data: List<*>, rowNumber: number): React.Element<*> => {
+        const { columnOrder } = this.props;
+        return (
+          <SummaryTableRow
+            columnOrder={columnOrder}
+            data={data}
+            rowNumber={rowNumber}
+            key={rowNumber}
+          />
+        );
+      });
   }
 
   _headersReady(): boolean {
