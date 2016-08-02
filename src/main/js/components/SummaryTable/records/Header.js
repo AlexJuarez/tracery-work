@@ -9,15 +9,15 @@ import { Record } from 'immutable';
 import { HEADER_CELL_MIN_WIDTH } from '../constants';
 
 export default class Header extends Record({
-  title: '',
-  order: 0,
-  width: 0,
-  customWidth: false,
+  key: 0,
   minWidth: HEADER_CELL_MIN_WIDTH,
+  order: 0,
+  title: '',
+  width: null,
 }) {
-  title: string;
-  order: number;
-  width: number;
+  key: number;
   minWidth: number;
-  customWidth: boolean;
+  order: number;
+  title: string;
+  width: ?number;
 }

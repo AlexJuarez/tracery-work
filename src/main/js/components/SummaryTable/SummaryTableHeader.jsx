@@ -6,19 +6,31 @@
 
 import React, { Component } from 'react';
 import { Header } from './';
-
 import pageOffsetLeft from './utils/pageOffsetLeft';
+import shallowCompare from 'react-addons-shallow-compare';
+import { addClass, removeClass } from './utils/classes';
 
 import type { Headers } from './';
 
 type Props = {
   header: Header,
   headers: Headers,
+
+  onDragStart: (header: Header) => void,
+  onDragOver: (header: Header) => void,
+  onDragEnd: (header: Header) => void,
   onResize: (delta: number) => void,
 };
 
 type State = {
   resizing: boolean,
+  dragging: boolean,
+}
+
+function clearDragOptions(event: SyntheticDragEvent) {
+  const { dataTransfer } = event;
+  dataTransfer.effectAllowed = 'none';
+  dataTransfer.dropEffect = 'none';
 }
 
 export default class SummaryTableHeader extends Component {
@@ -27,12 +39,13 @@ export default class SummaryTableHeader extends Component {
 
     this.state = {
       resizing: false,
+      dragging: false,
     };
 
     this._ticking = false;
 
     this._stopResizing = this._stopResizing.bind(this);
-    this._resizingHandler = this._resizingHandler.bind(this);
+    this._mouseMoveHandler = this._mouseMoveHandler.bind(this);
   }
 
   props: Props;
@@ -40,24 +53,31 @@ export default class SummaryTableHeader extends Component {
 
   componentDidMount() {
     window.addEventListener('mouseup', this._stopResizing, false);
-    window.addEventListener('mousemove', this._resizingHandler, false);
+    window.addEventListener('mousemove', this._mouseMoveHandler, false);
+  }
+
+  shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   componentWillUnmount() {
     window.removeEventListener('mouseup', this._stopResizing);
-    window.removeEventListener('mousemove', this._resizingHandler);
+    window.removeEventListener('mousemove', this._mouseMoveHandler);
   }
 
   _stopResizing: () => void;
-  _resizingHandler: (event: SyntheticMouseEvent) => void;
+  _mouseMoveHandler: (event: SyntheticMouseEvent) => void;
   _ticking: boolean;
   _resizeHandle: ?HTMLElement;
+  _root: ?HTMLElement;
+
+  _mouseMoveHandler(event: SyntheticMouseEvent) {
+    if (this.state.resizing) {
+      this._resizingHandler(event);
+    }
+  }
 
   _resizingHandler(event: SyntheticMouseEvent) {
-    if (!this.state.resizing) {
-      return;
-    }
-
     if (this._resizeHandle != null && !this._ticking) {
       const mouseX = event.pageX;
       /**
@@ -65,31 +85,43 @@ export default class SummaryTableHeader extends Component {
        * then add half the width so that the delta is calculated
        * from the middle of the resize handle
        */
-      const offsetCenter = (this._resizeHandle.clientWidth / 2);
+      const offsetCenter = (this._resizeHandle.offsetWidth / 2);
       const offsetLeft = pageOffsetLeft(this._resizeHandle);
-      const dragFn = () => {
+      const resizeFn = () => {
         this.props.onResize(offsetLeft + offsetCenter - mouseX);
 
         this._ticking = false;
       };
-      window.requestAnimationFrame(() => { dragFn(); });
+      window.requestAnimationFrame(() => { resizeFn(); });
     }
 
     this._ticking = true;
   }
 
+  _startResizing(event: SyntheticMouseEvent) {
+    // only start resizing if left button mouse down
+    if (event.button === 0) {
+      event.preventDefault();
+      event.stopPropagation();
+      addClass(document.body, 'summary-table-cursor-resizing');
+      this.setState({ resizing: true });
+    }
+  }
+
   _stopResizing() {
-    document.body.className = document.body.className
-      .replace('summary-table-cursor-resizing', '')
-      .trim();
+    removeClass(document.body, 'summary-table-cursor-resizing');
     this.setState({ resizing: false });
   }
 
-  _startResizing() {
-    // This class ensures that the cursor is the resizing pointer while
-    // dragging.
-    document.body.className += ' summary-table-cursor-resizing';
-    this.setState({ resizing: true });
+  _startDragging(event: SyntheticDragEvent) {
+    clearDragOptions(event);
+    this.props.onDragStart(this.props.header);
+    this.setState({ dragging: true });
+  }
+
+  _stopDragging() {
+    this.props.onDragEnd(this.props.header);
+    this.setState({ dragging: false });
   }
 
   _isLastHeader(): boolean {
@@ -107,8 +139,7 @@ export default class SummaryTableHeader extends Component {
           this._resizeHandle = resizeHandle;
         }}
         onMouseDown={(event: SyntheticMouseEvent) => {
-          event.preventDefault();
-          this._startResizing();
+          this._startResizing(event);
         }}
         className="summary-table-header-resizing-handle"
       />
@@ -122,12 +153,23 @@ export default class SummaryTableHeader extends Component {
     const style = {};
 
     if (width != null) {
-      style.width = `${width}px`;
+      style.width = width;
     }
 
     return (
       <div
-        className="summary-table-cell summary-table-header-cell"
+        className="summary-table-header-cell"
+        draggable="true"
+        onDragStart={(event: SyntheticDragEvent) => { this._startDragging(event); }}
+        onDragEnd={(event: SyntheticDragEvent) => { this._stopDragging(event); }}
+        onDragEnter={clearDragOptions}
+        onDragOver={(event: SyntheticDragEvent) => {
+          // By default elements cannot be dropped in other elements.
+          // To allow a drop we must prevent the default handling of the element.
+          event.preventDefault();
+          this.props.onDragOver(this.props.header);
+        }}
+        ref={(root: HTMLElement) => { this._root = root; }}
         style={style}
       >
         {title}
