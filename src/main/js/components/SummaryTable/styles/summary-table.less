@@ -1,7 +1,14 @@
-@summary-table-bg: #ecf0f7;
-@summary-table-striped: #c4d2e7;
-@summary-table-border-color: #ccc;
+@summary-table-bg: #fff;
+@summary-table-striped: #fcfcfc;
+@summary-table-border-color: #edeff0;
 @summary-table-row-loading-bg: #9cb4d8;
+@summary-table-row-height: 20px;
+@summary-table-row-padding: 1px;
+@summary-table-header-padding: 5px 10px;
+@summary-table-cell-padding: 5px 10px;
+@summary-table-resizing-handle-bg: #edeff0;
+@summary-table-cell-border: 1px solid @summary-table-border-color;
+@summary-table-header-bg: #fcfcfc;
 
 .summary-table-body {
   overflow-y: scroll;
@@ -26,33 +33,45 @@
 .summary-table {
   height: 100%;
   width: 100%;
+  border-collapse: separate;
   border-spacing: 0;
 }
 
 .summary-table-row {
-  height: 20px;
-  padding: 1px;
+  height: @summary-table-row-height;
+  padding: @summary-table-row-padding;
 }
 
 .summary-table-header {
   width: 100%;
-  .summary-table-cell {
-    font-weight: normal;
-    text-align: left;
-    border-bottom: 2px solid @summary-table-border-color;
-    padding: 5px 10px;
-  }
+  background: @summary-table-header-bg;
 }
 
 .summary-table-header-cell {
   position: relative;
+  display: table-cell;
+  font-weight: normal;
+  text-align: left;
+
+  padding: @summary-table-header-padding;
+  border-bottom: 2px solid @summary-table-border-color;
+
+  box-sizing: border-box;
   cursor: pointer;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+
+  &:active {
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+  }
 }
 
 .summary-table-cell {
   display: table-cell;
   box-sizing: border-box;
-  padding: 0 10px;
+  padding: @summary-table-cell-padding;
+  border: @summary-table-cell-border;
   &:first-child {
     padding-left:5px;
     min-width: 4ex;
@@ -71,7 +90,7 @@
   word-break: break-all;
   overflow: hidden;
   text-overflow: ellipsis;
-  height: 20px;
+  height: @summary-table-row-height;
 }
 
 .summary-table-row-loading-bg {
@@ -82,23 +101,26 @@
 
 .summary-table-row-loading {
   width: 100%;
-  height: 20px;
-  padding: 1px;
+  height: @summary-table-row-height;
+  padding: @summary-table-row-padding;
 }
 
 .summary-table-header-resizing-handle {
-  padding: 0 1px;
+  padding: 0 4px;
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 0;
+  right: -5px;
+  width: 10px;
+  box-sizing: border-box;
   cursor: col-resize;
+  z-index: 5;
   &:before {
     content: '';
     display: block;
     width: 2px;
     height: 100%;
-    background: @summary-table-striped;
+    background: @summary-table-resizing-handle-bg;
   }
 }
 
