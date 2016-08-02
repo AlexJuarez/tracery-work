@@ -15,6 +15,15 @@ module.exports = {
     //    'react-hot-loader/patch',
     './src/main/js/index.jsx',
   ],
+  devServer: {
+    proxy: {
+      '/api*': {
+        target: 'http://localhost:9090/',
+        secure: false,
+        changeOrigin: true,
+      },
+    },
+  },
   module: {
     loaders: [{
       test: /\.jsx?$/,

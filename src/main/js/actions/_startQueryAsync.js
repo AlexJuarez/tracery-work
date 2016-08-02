@@ -14,7 +14,7 @@ import * as fromState from '../state';
 // For now we hardcode this. When the frontend starts launching the data layer itself, it'll be
 // determining the port more dynamically, and when we start to support remote backends the host
 // will become dynamic as well.
-const DATA_LAYER_URL = 'http://localhost:9090/api';
+const DATA_LAYER_URL = `${window.location}api`;
 
 export type ServerResponse = Query.QueryResult | Thrift.TApplicationException;
 
