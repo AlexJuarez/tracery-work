@@ -75,6 +75,8 @@ export default class SummaryTableDemo extends Component {
         <button onClick={() => { this.setState({ height: this.state.height - 20 }); }}>
           Decrease Height
         </button>
+        <br />
+        <br />
         <SummaryTable
           rows={rows}
           headers={headers}
