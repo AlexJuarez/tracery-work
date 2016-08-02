@@ -104,7 +104,7 @@ export default class SummaryTableSizing extends Component {
       const style = {};
 
       style.minWidth = `${header.minWidth}px`;
-      if (header.customWidth) {
+      if (header.width != null) {
         style.width = `${header.width}px`;
       }
 
@@ -133,7 +133,7 @@ export default class SummaryTableSizing extends Component {
     const widths = [];
 
     forEachChild(headers.firstElementChild, (cell: HTMLElement) => {
-      widths.push(cell.clientWidth);
+      widths.push(cell.offsetWidth);
     });
 
     this.props.onHeaderUpdate(
@@ -142,19 +142,19 @@ export default class SummaryTableSizing extends Component {
       ))
     );
 
-    this.setState({ headerHeight: headers.clientHeight });
+    this.setState({ headerHeight: headers.offsetHeight });
   }
 
   _handleColumnWidth() {
     const firstRow = this._rows && this._rows.firstElementChild;
     const widths = [];
     forEachChild(firstRow, (cell: HTMLElement) => {
-      widths.push(cell.clientWidth);
+      widths.push(cell.offsetWidth);
     });
 
-    if (firstRow != null) {
-      const rowHeight = firstRow.clientHeight;
-      const maxRows = Math.ceil(this._container.clientHeight / rowHeight);
+    if (firstRow != null && firstRow instanceof HTMLElement) {
+      const rowHeight = firstRow.offsetHeight;
+      const maxRows = Math.ceil(this._container.offsetHeight / rowHeight);
       this.props.onHeaderUpdate(
         this.props.headers.map((header: Header, i: number): Header => (
           header.set('width', widths[i])
