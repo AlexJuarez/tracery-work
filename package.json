@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "The unified trace-analysis platform.",
   "scripts": {
-    "build": "npm run thrift && webpack",
+    "build": "npm run thrift && webpack --define process.env.NODE_ENV='\"production\"' --progress --colors",
     "coverage": "npm run test -- --coverage",
     "flow": "flow",
     "lint": "eslint --ext .js --ext .jsx",
