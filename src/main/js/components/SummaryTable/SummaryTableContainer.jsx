@@ -41,7 +41,7 @@ export default class SummaryTableContainer extends Component {
       return null;
     }
 
-    return <tr key="start" style={{ height: `${start * rowHeight}px` }} />;
+    return <tr key="start" style={{ height: start * rowHeight }} />;
   }
 
   _renderBottomOffset(): ?React.Element<*> {
@@ -51,7 +51,7 @@ export default class SummaryTableContainer extends Component {
       return null;
     }
 
-    return <tr key="end" style={{ height: `${(totalRows - end) * rowHeight}px` }} />;
+    return <tr key="end" style={{ height: (totalRows - end) * rowHeight }} />;
   }
 
   _renderRows(): Array<React.Element<*>> {
@@ -86,7 +86,7 @@ export default class SummaryTableContainer extends Component {
   _renderHeaders(): Array<React.Element<*>> {
     return this.props.headers.valueSeq().toArray()
       .map((header: Header): React.Element<*> => (
-        <th key={header.title} style={{ padding: 0, width: `${header.width}px` }} />
+        <th key={header.title} style={{ padding: 0, width: header.width }} />
       ));
   }
 

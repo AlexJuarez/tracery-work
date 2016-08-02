@@ -42,14 +42,14 @@ export default class SummaryTableRow extends Component {
     const { rowNumber, data, height } = this.props;
 
     const classes = classNames(
-      'summary-table-row-loading',
+      { 'summary-table-row-loading': data.size === 0 },
       { 'summary-table-row-striped': rowNumber % 2 === 1 },
     );
 
     const style = {};
 
     if (data.size === 0 && height != null) {
-      style.height = `${height}px`;
+      style.height = height;
       return (
         <tr className={classes} style={style}>
           <td colSpan="100%" className="summary-table-row-loading-bg" />
