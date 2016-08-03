@@ -20,10 +20,11 @@
     "lodash.throttle": "^4.0.1",
     "node-http-proxy": "^0.2.3",
     "normalizr": "^2.2.0",
-    "react": "^15.1.0",
-    "react-addons-shallow-compare": "^15.2.1",
+    "react": "^15.3.0",
+    "react-addons-shallow-compare": "^15.3.0",
+    "react-addons-test-utils": "^15.3.0",
     "react-bootstrap": "^0.29.5",
-    "react-dom": "^15.1.0",
+    "react-dom": "^15.3.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.5.2",
     "redux": "^3.5.2",
@@ -57,6 +58,7 @@
     "flow-bin": "^0.30.0",
     "html-webpack-plugin": "^2.19.0",
     "imports-loader": "^0.6.5",
+    "jest": "^13.2.3",
     "jest-cli": "^12.1.1",
     "json-loader": "^0.5.4",
     "less": "^2.7.1",
@@ -64,7 +66,7 @@
     "less-plugin-clean-css": "^1.5.1",
     "lodash.debounce": "^4.0.6",
     "npm-run-all": "^2.3.0",
-    "react-addons-test-utils": "^15.1.0",
+    "react-addons-test-utils": "^15.2.1",
     "react-hot-loader": "^3.0.0-beta.0",
     "redbox-react": "^1.2.10",
     "redux-devtools": "^3.3.1",
@@ -75,17 +77,22 @@
     "webpack-dev-server": "^1.14.1"
   },
   "jest": {
+    "testPathIgnorePatterns": [".eslintrc.js"],
+    "moduleNameMapper": {
+      "^.+\\.(css|less)$": "<rootDir>/src/test/js/styleMock.js"
+    },
     "moduleFileExtensions": [
       "js",
       "json",
       "jsx"
     ],
-    "testRegex": "test/js/.*\\.jsx?$",
     "unmockedModulePathPatterns": [
       "<rootDir>/node_modules/enzyme/",
       "<rootDir>/node_modules/react/",
       "<rootDir>/node_modules/react-dom/",
-      "<rootDir>/node_modules/react-addons-test-utils/"
+      "<rootDir>/node_modules/react-addons-test-utils/",
+      "<rootDir>/node_modules/immutable/",
+      "<rootDir>/node_modules/classnames/"
     ]
   }
 }

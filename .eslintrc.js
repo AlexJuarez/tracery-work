@@ -70,5 +70,8 @@ module.exports = {
     },
     "settings": {
         "import/resolver": "webpack",
+        "flowtype": {
+            onlyFilesWithFlowAnnotation: true,
+        }
     }
 };

@@ -43,7 +43,7 @@ export default class SummaryTableRow extends Component {
 
     const classes = classNames(
       'summary-table-row-loading',
-      { 'summary-table-row-striped': (rowNumber) % 2 === 1 },
+      { 'summary-table-row-striped': rowNumber % 2 === 1 },
     );
 
     const style = {};
