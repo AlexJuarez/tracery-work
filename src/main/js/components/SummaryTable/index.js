@@ -4,8 +4,9 @@
  * @flow
  */
 
-import type { Column, Rows, Headers } from './constants';
+import type { Rows, Headers, ColumnOrder } from './constants';
 
 export { default as SummaryTable } from './SummaryTable';
 export { default as ScrollState } from './records/ScrollState';
-export type { Column, Rows, Headers };
+export { default as Header } from './records/Header';
+export type { Rows, Headers, ColumnOrder };

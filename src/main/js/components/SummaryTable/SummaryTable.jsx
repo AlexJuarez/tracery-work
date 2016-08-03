@@ -9,11 +9,13 @@ import throttle from 'lodash.throttle';
 import invariant from 'invariant';
 import shallowCompare from 'react-addons-shallow-compare';
 
-import { List } from 'immutable';
+import { is, List } from 'immutable';
+import { Header } from './';
 
 import ScrollState from './records/ScrollState';
 import SummaryTableContainer from './SummaryTableContainer';
 import TableSizing from './SummaryTableSizing';
+import TableHeaders from './SummaryTableHeaders';
 
 import {
   INITIAL_ROW_MAX,
@@ -22,11 +24,10 @@ import {
 } from './constants';
 
 import type {
-  Column,
-  ColumnWidths,
   Headers,
   Rows,
-} from './constants';
+  ColumnOrder,
+} from './';
 
 require('./styles/summary-table.less');
 
@@ -35,8 +36,11 @@ type Props = {
    * Optional the current row to start at.
    */
   currentRow?: number,
-  headers: Headers,
-  height?: number | string,
+  headers: Array<string>,
+  /**
+   * height in pixels
+   */
+  height: number,
   /**
    * rows represents the currently loaded rows in a sparse map
    * with Map<rowNumber, row data>
@@ -46,7 +50,10 @@ type Props = {
    * totalRows is the total number of rows that is expected.
    */
   totalRows: number,
-  width?: number | string,
+  /**
+   * width in pixels
+   */
+  width: number,
 
   // Functions for updating
   onScrollStateUpdate?: (scrollState: ScrollState, viewSizeInRows: number) => void,
@@ -54,11 +61,13 @@ type Props = {
 };
 
 type State = {
+  headers: Headers,
+  columnOrder: ColumnOrder,
   rowHeight: number,
-  viewSizeInRows: number,
   scroll: ScrollState,
-  columnWidths: ColumnWidths,
-}
+  tableBodyHeight: number,
+  viewSizeInRows: number,
+};
 
 export default class SummaryTable extends Component {
   constructor(props: Props, context: Object) {
@@ -88,11 +97,29 @@ export default class SummaryTable extends Component {
       'The total number of rows must be positive'
     );
 
+    if (props.width != null) {
+      invariant(props.width >= 0, 'Width must be greater than 0');
+    }
+
+    if (props.height != null) {
+      invariant(props.height >= 0, 'Height must be greater than 0');
+    }
+
+    const headers = new List(props.headers.map((title: string, order: number): Header => (
+      new Header({
+        title,
+        order,
+        key: order,
+      })
+    )));
+
     this.state = {
+      columnOrder: headers.map((h: Header): number => h.key),
+      headers,
+      tableBodyHeight: 0,
       rowHeight: ROW_INITIAL_HEIGHT,
       viewSizeInRows: INITIAL_ROW_MAX,
       scroll: new ScrollState(initialScrollState),
-      columnWidths: new List(),
     };
 
     this._ticking = false;
@@ -121,19 +148,34 @@ export default class SummaryTable extends Component {
 
   _ticking: boolean;
 
-  _onResize(widths: Array<number>, rowHeight: number, viewSizeInRows: number) {
-    this.setState({
-      columnWidths: new List(widths),
-      rowHeight,
-      viewSizeInRows,
-    });
+  _onHeaderUpdate(prevHeaders: Headers) {
+    const headers = prevHeaders.sort((a: Header, b: Header): number => (
+      a.order - b.order
+    ));
+
+    const state: {[key: string]: *} = { headers };
+
+    const columnOrder = headers.map((h: Header): number => h.key);
+
+    if (!is(this.state.columnOrder, columnOrder)) {
+      state.columnOrder = columnOrder;
+    }
+
+    if (!is(this.state.headers, headers)) {
+      this.setState(state);
+    }
   }
 
-  _getOrderedColumns(): Headers {
-    return this.props.headers
-      .sort((a: Column, b: Column): number => (
-        a.order - b.order
-      ));
+  _onResize(
+    rowHeight: number,
+    viewSizeInRows: number,
+    tableBodyHeight: number,
+  ) {
+    this.setState({
+      rowHeight,
+      viewSizeInRows,
+      tableBodyHeight,
+    });
   }
 
   _handleScroll(event: *) {
@@ -169,30 +211,13 @@ export default class SummaryTable extends Component {
       return null;
     }
 
-    const { columnWidths } = this.state;
-
-    const headers = this._getOrderedColumns()
-      .map((header: Column, i: number): React.Element<*> => {
-        let style;
-        if (columnWidths.get(i) != null) {
-          style = { width: `${columnWidths.get(i)}px` };
-        }
-
-        return (
-          <div
-            className="summary-table-header-cell"
-            style={style}
-            key={header.title}
-          >
-            {header.title}
-          </div>
-        );
-      });
-
     return (
-      <div className="summary-table-header">
-        {headers}
-      </div>
+      <TableHeaders
+        headers={this.state.headers}
+        onHeaderUpdate={(headers: Headers) => {
+          this._onHeaderUpdate(headers);
+        }}
+      />
     );
   }
 
@@ -205,9 +230,11 @@ export default class SummaryTable extends Component {
       <div
         onScroll={(event: *): void => this._handleScroll(event)}
         className="summary-table-body"
+        style={{ height: `${this.state.tableBodyHeight}px` }}
       >
         <SummaryTableContainer
-          columnWidths={this.state.columnWidths}
+          columnOrder={this.state.columnOrder}
+          headers={this.state.headers}
           viewSizeInRows={this.state.viewSizeInRows}
           rowHeight={this.state.rowHeight}
           rows={this.props.rows}
@@ -225,12 +252,20 @@ export default class SummaryTable extends Component {
 
     return (
       <TableSizing
+        columnOrder={this.state.columnOrder}
         rows={this.props.rows}
-        columns={this._getOrderedColumns()}
+        headers={this.state.headers}
         width={this.props.width}
         height={this.props.height}
-        onResize={(widths: Array<number>, rowHeight: number, viewSizeInRows: number) => {
-          this._onResize(widths, rowHeight, viewSizeInRows);
+        onResize={(
+          rowHeight: number,
+          viewSizeInRows: number,
+          tableBodyHeight: number
+        ) => {
+          this._onResize(rowHeight, viewSizeInRows, tableBodyHeight);
+        }}
+        onHeaderUpdate={(headers: Headers) => {
+          this._onHeaderUpdate(headers);
         }}
       />
     );
@@ -238,7 +273,7 @@ export default class SummaryTable extends Component {
 
   render(): React.Element<*> {
     return (
-      <div className="summary-table-container">
+      <div style={{ width: `${this.props.width}px` }} className="summary-table-container">
         {this._renderHeaders()}
         {this._renderSummaryTable()}
         {this._renderSummaryTableSizing()}

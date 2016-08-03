@@ -4,15 +4,18 @@
  * @flow
  */
 
-import React from 'react';
+import React, { Component } from 'react';
 import { SummaryTable } from './components/SummaryTable';
 import { Map, List } from 'immutable';
 
-import type { Column } from './components/SummaryTable';
+type State = {
+  height: number,
+  width: number,
+};
 
 const TOTAL_ROWS = 1000;
 
-const headers = new List([
+const headers = [
   '#',
   'timestamp',
   'type',
@@ -22,10 +25,7 @@ const headers = new List([
   'file',
   'page-count',
   'duration',
-].map((title: string, order: number): Column => ({
-  title,
-  order,
-})));
+];
 
 function createRows(): {[key: string]: *} {
   const rows = {};
@@ -48,12 +48,43 @@ function createRows(): {[key: string]: *} {
 
 const rows = new Map(createRows());
 
-export default function SummaryTableDemo(): React.Element<*> {
-  return (
-    <SummaryTable
-      rows={rows}
-      headers={headers}
-      totalRows={TOTAL_ROWS}
-    />
-  );
+export default class SummaryTableDemo extends Component {
+  constructor(props: Object, context: Object) {
+    super(props, context);
+
+    this.state = {
+      height: 400,
+      width: 800,
+    };
+  }
+
+  state: State;
+
+  render(): React.Element<*> {
+    return (
+      <div>
+        <button onClick={() => { this.setState({ width: this.state.width + 20 }); }}>
+          Increase Width
+        </button>
+        <button onClick={() => { this.setState({ width: this.state.width - 20 }); }}>
+          Decrease Width
+        </button>
+        <button onClick={() => { this.setState({ height: this.state.height + 20 }); }}>
+          Increase Height
+        </button>
+        <button onClick={() => { this.setState({ height: this.state.height - 20 }); }}>
+          Decrease Height
+        </button>
+        <br />
+        <br />
+        <SummaryTable
+          rows={rows}
+          headers={headers}
+          totalRows={TOTAL_ROWS}
+          height={this.state.height}
+          width={this.state.width}
+        />
+      </div>
+    );
+  }
 }

@@ -11,8 +11,11 @@ import shallowCompare from 'react-addons-shallow-compare';
 
 import { List } from 'immutable';
 
+import type { ColumnOrder } from './';
+
 type Props = {
   data: List<*>,
+  columnOrder: ColumnOrder,
   height?: number,
   rowNumber: number,
 };
@@ -38,18 +41,33 @@ export default class SummaryTableRow extends Component {
     return shallowCompare(this, nextProps, nextState);
   }
 
+  _renderCells(): Array<React.Element<*>> {
+    const { data, columnOrder } = this.props;
+
+    return columnOrder.toArray().map((key: number): React.Element<*> => {
+      const cell = data.get(key);
+      return (
+        <td key={`${key}`} className="summary-table-cell">
+          <div className="summary-table-cell-content">
+            {cell}
+          </div>
+        </td>
+      );
+    });
+  }
+
   render(): React.Element<*> {
     const { rowNumber, data, height } = this.props;
 
     const classes = classNames(
-      'summary-table-row-loading',
+      { 'summary-table-row-loading': data.size === 0 },
       { 'summary-table-row-striped': rowNumber % 2 === 1 },
     );
 
     const style = {};
 
     if (data.size === 0 && height != null) {
-      style.height = `${height}px`;
+      style.height = height;
       return (
         <tr className={classes} style={style}>
           <td colSpan="100%" className="summary-table-row-loading-bg" />
@@ -59,13 +77,7 @@ export default class SummaryTableRow extends Component {
 
     return (
       <tr className={classes} style={style}>
-        {data.map((cell: *, j: number): React.Element<*> => (
-          <td key={`${rowNumber}:${j}`} className="summary-table-cell">
-            <div className="summary-table-cell-content">
-              {cell}
-            </div>
-          </td>
-        ))}
+        {this._renderCells()}
       </tr>
     );
   }

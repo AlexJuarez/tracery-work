@@ -8,14 +8,16 @@ import React, { Component } from 'react';
 import { List } from 'immutable';
 import SummaryTableRow from './SummaryTableRow';
 import ScrollState from './records/ScrollState';
+import { Header } from './';
 
-import type { ColumnWidths, Rows } from './constants';
+import type { Headers, Rows, ColumnOrder } from './constants';
 
 type Props = {
-  columnWidths: ColumnWidths,
+  columnOrder: ColumnOrder,
   viewSizeInRows: number,
   rowHeight: number,
   rows: Rows,
+  headers: Headers,
   scrollState: ScrollState,
   totalRows: number,
 };
@@ -40,7 +42,7 @@ export default class SummaryTableContainer extends Component {
       return null;
     }
 
-    return <tr key="start" style={{ height: `${start * rowHeight}px` }} />;
+    return <tr key="start" style={{ height: start * rowHeight }} />;
   }
 
   _renderBottomOffset(): ?React.Element<*> {
@@ -50,7 +52,7 @@ export default class SummaryTableContainer extends Component {
       return null;
     }
 
-    return <tr key="end" style={{ height: `${(totalRows - end) * rowHeight}px` }} />;
+    return <tr key="end" style={{ height: (totalRows - end) * rowHeight }} />;
   }
 
   _renderRows(): Array<React.Element<*>> {
@@ -72,6 +74,7 @@ export default class SummaryTableContainer extends Component {
       rows.push(
         <SummaryTableRow
           key={key}
+          columnOrder={this.props.columnOrder}
           data={data == null ? new List() : data}
           height={rowHeight}
           rowNumber={i}
@@ -83,16 +86,16 @@ export default class SummaryTableContainer extends Component {
   }
 
   _renderHeaders(): Array<React.Element<*>> {
-    return this.props.columnWidths.valueSeq().toArray()
-      .map((width: number, i: number): React.Element<*> => (
-        <th key={i} width={`${width}px`} />
+    return this.props.headers.valueSeq().toArray()
+      .map((header: Header): React.Element<*> => (
+        <th key={header.title} style={{ padding: 0, width: header.width }} />
       ));
   }
 
   render(): ?React.Element<*> {
     return (
       <table
-        className="summary-table-chunk"
+        className="summary-table"
       >
         <thead>
           <tr>

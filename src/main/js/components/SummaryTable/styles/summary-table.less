@@ -1,93 +1,132 @@
-@summary-table-bg: #ecf0f7;
-@summary-table-striped: #c4d2e7;
-@summary-table-border-color: #ccc;
+@summary-table-bg: #fff;
+@summary-table-striped: #fcfcfc;
+@summary-table-border-color: #edeff0;
 @summary-table-row-loading-bg: #9cb4d8;
+@summary-table-row-height: 20px;
+@summary-table-row-padding: 1px;
+@summary-table-header-padding: 5px 10px;
+@summary-table-cell-padding: 5px 10px;
+@summary-table-resizing-handle-bg: #edeff0;
+@summary-table-cell-border: 1px solid @summary-table-border-color;
+@summary-table-header-bg: #fcfcfc;
+
+.summary-table-body {
+  overflow-y: scroll;
+  position: relative;
+}
+
+.summary-table-sizing {
+  overflow-y: scroll;
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
 
 .summary-table-container {
-  .summary-table-sizing {
-    height: 400px;
-    overflow-y: scroll;
-    visibility: hidden;
-    position: absolute;
-    width: 100%;
-    top: 0;
-  }
-
-  .summary-table-chunk {
-    height: 100%;
-    width: 100%;
-    border-spacing: 0;
-  }
-
-  .summary-table-row {
-    height: 20px;
-    padding: 1px;
-  }
-
-  .summary-table-header .summary-table-header-cell:first-child {
-    padding-left: 5px;
-  }
-  .summary-table-row .summary-table-cell:first-child {
-    min-width: 4ex !important;
-    padding-left: 5px;
-  }
-
-  .summary-table-row-striped {
-    background: @summary-table-striped;
-  }
-
-  .summary-table-cell-content {
-    word-break: break-all;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 20px;
-  }
-
-  .summary-table-chunk-loading {
-    width: 100%;
-    position: absolute;
-  }
-
-  .summary-table-row-striped .summary-table-row-loading-bg {
-    border-color: @summary-table-striped;
-  }
-
-  .summary-table-row-loading-bg {
-    background: @summary-table-row-loading-bg;
-    border: 5px solid @summary-table-bg;
-    box-sizing: border-box;
-  }
-
-  .summary-table-row-loading {
-    width: 100%;
-    height: 20px;
-    padding: 1px;
-  }
-
-  .summary-table-header {
-    width: 100%;
-    border-bottom: 2px solid @summary-table-border-color;
-    padding: 5px 0;
-
-    .summary-table-header-cell {
-      display: table-cell;
-    }
-  }
-
-  .summary-table-body {
-    height: 400px;
-    overflow-y: scroll;
-    position: relative;
-  }
-
-  .summary-table-placeholder {
-    width: 100%;
-  }
-
-  width: 80%;
   margin: 0 auto;
   display: block;
   background: @summary-table-bg;
   position: relative;
 }
 
+.summary-table {
+  height: 100%;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.summary-table-row {
+  height: @summary-table-row-height;
+  padding: @summary-table-row-padding;
+}
+
+.summary-table-header {
+  width: 100%;
+  background: @summary-table-header-bg;
+}
+
+.summary-table-header-cell {
+  position: relative;
+  display: table-cell;
+  font-weight: normal;
+  text-align: left;
+
+  padding: @summary-table-header-padding;
+  border-bottom: 2px solid @summary-table-border-color;
+
+  box-sizing: border-box;
+  cursor: pointer;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+
+  &:active {
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+  }
+}
+
+.summary-table-cell {
+  display: table-cell;
+  box-sizing: border-box;
+  padding: @summary-table-cell-padding;
+  border: @summary-table-cell-border;
+  &:first-child {
+    padding-left:5px;
+    min-width: 4ex;
+  }
+}
+
+.summary-table-row-striped {
+  background: @summary-table-striped;
+
+  .summary-table-row-loading-bg {
+    border-color: @summary-table-striped;
+  }
+}
+
+.summary-table-cell-content {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: @summary-table-row-height;
+}
+
+.summary-table-row-loading-bg {
+  background: @summary-table-row-loading-bg;
+  border: 5px solid @summary-table-bg;
+  box-sizing: border-box;
+}
+
+.summary-table-row-loading {
+  width: 100%;
+  height: @summary-table-row-height;
+  padding: @summary-table-row-padding;
+}
+
+.summary-table-header-resizing-handle {
+  padding: 0 4px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -5px;
+  width: 10px;
+  box-sizing: border-box;
+  cursor: col-resize;
+  z-index: 5;
+  &:before {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 100%;
+    background: @summary-table-resizing-handle-bg;
+  }
+}
+
+.summary-table-cursor-resizing {
+  .summary-table-header-cell {
+    cursor: col-resize;
+  }
+  cursor: col-resize;
+}
